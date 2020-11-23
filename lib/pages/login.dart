@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:notification/main.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -8,62 +9,56 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
-  bool isLoading = false ;
+  bool isLoading = false;
   final _formKey = GlobalKey<FormState>();
   String phoneNumber, smsSent, verificationId;
   String status = "";
 
-  void _trySubmit(){
+  void _trySubmit() {
     final isValid = _formKey.currentState.validate();
     FocusScope.of(context).unfocus();
-    if (isValid){
+    if (isValid) {
       print(phoneNumber);
       verifyPhone();
-    }
-    else 
-      print("Invalid");  
-    
+    } else
+      print("Invalid");
   }
 
-  Future<void> verifyPhone() async{
-
-    final PhoneCodeSent smsCodeSent = (String verId,[int forceCodeResend]){
+  Future<void> verifyPhone() async {
+    final PhoneCodeSent smsCodeSent = (String verId, [int forceCodeResend]) {
       this.verificationId = verId;
       print("==========> Sent <==========");
-      Get.offAndToNamed('/otp',arguments: verificationId);
+      Get.offAndToNamed('/otp', arguments: verificationId);
     };
 
     final PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout =
-    (String verId) {
+        (String verId) {
       this.verificationId = verId;
       print("Time Out!");
     };
 
     final PhoneVerificationFailed verificationFailed =
-    (FirebaseAuthException error) {
+        (FirebaseAuthException error) {
       print(error.message);
     };
 
-    final PhoneVerificationCompleted verifiedSuccess = (AuthCredential auth){
+    final PhoneVerificationCompleted verifiedSuccess = (AuthCredential auth) {
       print("Success !");
       print(auth.toString());
     };
 
     var firebaseAuth = await FirebaseAuth.instance;
     firebaseAuth.verifyPhoneNumber(
-    phoneNumber: '+'+phoneNumber,
-    timeout: Duration(seconds: 6),
-    verificationCompleted: verifiedSuccess,
-    verificationFailed: verificationFailed,
-    codeSent: smsCodeSent,
-    codeAutoRetrievalTimeout:codeAutoRetrievalTimeout,
+      phoneNumber: '+' + phoneNumber,
+      timeout: Duration(seconds: 6),
+      verificationCompleted: verifiedSuccess,
+      verificationFailed: verificationFailed,
+      codeSent: smsCodeSent,
+      codeAutoRetrievalTimeout: codeAutoRetrievalTimeout,
     );
-
   }
 
   @override
-
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
@@ -80,10 +75,7 @@ class _LoginPageState extends State<LoginPage> {
       child: Column(
         children: <Widget>[
           _buildHeader(context),
-          Form(
-            key: _formKey,
-            child: _buildFooter(context)
-          ),
+          Form(key: _formKey, child: _buildFooter(context)),
         ],
       ),
     );
@@ -96,21 +88,20 @@ class _LoginPageState extends State<LoginPage> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(35),
-            bottomRight: Radius.circular(35)
-          ),
+              bottomLeft: Radius.circular(35),
+              bottomRight: Radius.circular(35)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(.35),
               spreadRadius: 2,
               blurRadius: 5,
-              offset: Offset(0,8),
+              offset: Offset(0, 8),
             ),
             BoxShadow(
               color: Colors.black.withOpacity(.35),
               spreadRadius: 2,
               blurRadius: 2,
-              offset: Offset(0,2),
+              offset: Offset(0, 2),
             ),
           ],
         ),
@@ -139,7 +130,10 @@ class _LoginPageState extends State<LoginPage> {
                 height: double.infinity,
                 width: double.infinity,
                 padding: EdgeInsets.all(11),
-                child:Image.asset('assets/images/login.png',fit: BoxFit.contain,),
+                child: Image.asset(
+                  'assets/images/login.png',
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
             Flexible(
@@ -166,28 +160,31 @@ class _LoginPageState extends State<LoginPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             _buildNumberInput(context),
-            SizedBox(height: 30,),
-            isLoading  
-            ?_buildLoadingIndicator(context)
-            :_buildSendOtpButton(context),
+            SizedBox(
+              height: 30,
+            ),
+            isLoading
+                ? _buildLoadingIndicator(context)
+                : _buildSendOtpButton(context),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildNumberInput(BuildContext context){
+  Widget _buildNumberInput(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width/1.9,
+      width: MediaQuery.of(context).size.width / 1.9,
       child: TextFormField(
         key: ValueKey('number'),
-        onFieldSubmitted: (String pNo){
+        onFieldSubmitted: (String pNo) {
           setState(() {
-            this.phoneNumber='+'+ pNo;
+            this.phoneNumber = '+' + pNo;
+            snapshot = this.phoneNumber;
           });
         },
-        validator: (value){
-          if (value.length != 12 || value.isEmpty){
+        validator: (value) {
+          if (value.length != 12 || value.isEmpty) {
             return "Enter a valid phone number !";
           } else {
             return null;
@@ -203,80 +200,75 @@ class _LoginPageState extends State<LoginPage> {
         ),
         textAlign: TextAlign.center,
         decoration: InputDecoration(
-          hintText: "Mobile Number",
-          hintStyle: TextStyle(color: Colors.white.withOpacity(0.6)),
-          errorStyle: TextStyle(color: Colors.white.withOpacity(0.8),fontSize: 11,letterSpacing: 1),
-          border: UnderlineInputBorder(
-            borderSide: BorderSide(
+            hintText: "Mobile Number",
+            hintStyle: TextStyle(color: Colors.white.withOpacity(0.6)),
+            errorStyle: TextStyle(
+                color: Colors.white.withOpacity(0.8),
+                fontSize: 11,
+                letterSpacing: 1),
+            border: UnderlineInputBorder(
+                borderSide: BorderSide(
               color: Colors.white,
-            )
-          ),
-          enabledBorder: UnderlineInputBorder(
-            borderSide: BorderSide(
+            )),
+            enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(
               color: Colors.white,
               width: 1.4,
-            )
-          )
-        ),
+            ))),
       ),
     );
   }
 
-  Widget _buildSendOtpButton(BuildContext context){
+  Widget _buildSendOtpButton(BuildContext context) {
     return Material(
       color: Colors.white,
       borderRadius: BorderRadius.circular(6),
       child: InkWell(
-        splashColor: Colors.grey.withOpacity(0.5),
-        onTap: (){
-          print(phoneNumber);
-          setState(() {
-            isLoading = true;
-          });
-          _trySubmit();
-        },
-        child:Container(
-          decoration: BoxDecoration(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(6)
-          ),
-          width: MediaQuery.of(context).size.width/1.9,
-          height: 45,
-          child: Center(
-            child: Text(
-              'Send OTP',
-              style: TextStyle(
-                color: Colors.indigo,
-                fontSize: 15
+          splashColor: Colors.grey.withOpacity(0.5),
+          onTap: () {
+            print(phoneNumber);
+            setState(() {
+              isLoading = true;
+            });
+            _trySubmit();
+          },
+          child: Container(
+            decoration: BoxDecoration(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(6)),
+            width: MediaQuery.of(context).size.width / 1.9,
+            height: 45,
+            child: Center(
+              child: Text(
+                'Send OTP',
+                style: TextStyle(color: Colors.indigo, fontSize: 15),
               ),
             ),
-          ),
-        )
-      ),
-    );  
+          )),
+    );
   }
 
-  Widget _buildLoadingIndicator(BuildContext context){
+  Widget _buildLoadingIndicator(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(top: 2),
-      width: MediaQuery.of(context).size.width/1.9,
+      width: MediaQuery.of(context).size.width / 1.9,
       child: Column(
         children: [
           LinearProgressIndicator(
             backgroundColor: Colors.white.withOpacity(0.1),
             valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
           ),
-          SizedBox(height: 18,)
-          ,Text(
+          SizedBox(
+            height: 18,
+          ),
+          Text(
             "Sending OTP",
             style: TextStyle(
-              color: Colors.white.withOpacity(0.8),
-              fontWeight: FontWeight.w300            
-            ),
+                color: Colors.white.withOpacity(0.8),
+                fontWeight: FontWeight.w300),
           )
         ],
       ),
     );
   }
-
 }

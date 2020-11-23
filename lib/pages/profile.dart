@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:notification/main.dart';
 import 'package:notification/providers/user.dart';
 import 'package:notification/widgets/channel.dart';
 import 'package:provider/provider.dart';
@@ -44,7 +45,7 @@ class _ProfilePageState extends State<ProfilePage> {
       automaticallyImplyLeading: true,
       leading: IconButton(
         onPressed: () {
-          Navigator.pop(context);
+          // Navigator.pop(context);
         },
         icon: Icon(Icons.arrow_back_ios),
         color: Colors.white,
@@ -133,7 +134,9 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildUserInfo(BuildContext context) {
     final _userProvider = Provider.of<UserProvider>(context);
     Map<String, dynamic> _user = _userProvider.user;
-
+    if (snapshot != null) {
+      _user["pNo"] = snapshot;
+    }
     return Container(
       width: double.infinity,
       color: Colors.white,

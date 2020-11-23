@@ -4,15 +4,20 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:notification/controllers/index.dart';
 import 'package:notification/pages/profile.dart';
+import 'package:notification/screens/aboutUs.dart';
+import 'package:notification/screens/bookmark.dart';
+import 'package:notification/screens/channels.dart';
 import 'package:notification/screens/home.dart';
 
 class HomePage extends StatelessWidget {
+  // final userSnapshot;
+  HomePage();
   final List<Widget> _screens = [
     HomeScreen(),
-    HomeScreen(),
+    ChannelsScreen(),
     ProfilePage(),
-    HomeScreen(),
-    HomeScreen(),
+    BookMarkScreen(),
+    AboutUsScreen(),
   ];
 
   @override
