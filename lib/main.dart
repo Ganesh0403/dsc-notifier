@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -8,12 +9,12 @@ import 'package:notification/pages/login.dart';
 import 'package:notification/pages/otp.dart';
 import 'package:notification/pages/profile.dart';
 import 'package:notification/pages/splash.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:notification/providers/user.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/user.dart';
 
+var snapshot;
 void main() async {
   // Register controllers
   // Example:
@@ -54,11 +55,12 @@ class App extends StatelessWidget {
           home: StreamBuilder(
             // ignore: deprecated_member_use
             stream: FirebaseAuth.instance.onAuthStateChanged,
-            builder: (ctx,userSnapshot) {
-              if (userSnapshot.hasData)
+            builder: (ctx, userSnapshot) {
+              if (userSnapshot.hasData) {
+                snapshot = userSnapshot.data.phoneNumber;
                 return HomePage();
-              else
-                return LoginPage();     
+              } else
+                return LoginPage();
             },
           ),
           getPages: [
@@ -66,7 +68,10 @@ class App extends StatelessWidget {
             // Example
             // GetPage(name: '/', page: () => Widget()),
             GetPage(name: '/', page: () => SplashPage()),
-            GetPage(name: '/login', page: () => LoginPage(),transition: Transition.fadeIn),
+            GetPage(
+                name: '/login',
+                page: () => LoginPage(),
+                transition: Transition.fadeIn),
             GetPage(name: '/otp', page: () => OtpPage()),
             GetPage(name: '/profile', page: () => ProfilePage()),
             GetPage(name: '/homePage', page: () => HomePage()),
