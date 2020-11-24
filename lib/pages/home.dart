@@ -5,11 +5,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:notification/controllers/index.dart';
 import 'package:notification/pages/profile.dart';
 import 'package:notification/screens/home.dart';
+import 'package:notification/screens/channels.dart';
 
 class HomePage extends StatelessWidget {
   final List<Widget> _screens = [
     HomeScreen(),
-    HomeScreen(),
+    ChannelsScreen(),
     ProfilePage(),
     HomeScreen(),
     HomeScreen(),
