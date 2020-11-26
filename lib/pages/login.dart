@@ -183,6 +183,10 @@ class _LoginPageState extends State<LoginPage> {
             snapshot = this.phoneNumber;
           });
         },
+        onChanged: (String pNo) {
+          this.phoneNumber = '+' + pNo;
+          snapshot = this.phoneNumber;
+        },
         validator: (value) {
           if (value.length != 12 || value.isEmpty) {
             return "Enter a valid phone number !";
