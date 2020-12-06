@@ -1,6 +1,29 @@
 import 'package:flutter/material.dart';
 
-class ChannelWidget extends StatelessWidget {
+class ChannelWidget extends StatefulWidget {
+  final String uid;
+  final String name;
+  final String description;
+  final String img;
+
+  ChannelWidget({
+    this.img,
+    @required this.uid,
+    @required this.name,
+    @required this.description,
+  });
+
+  @override
+  _ChannelWidgetState createState() => _ChannelWidgetState();
+}
+
+class _ChannelWidgetState extends State<ChannelWidget> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -23,14 +46,31 @@ class ChannelWidget extends StatelessWidget {
           Container(
             height: MediaQuery.of(context).size.height / 15,
             width: MediaQuery.of(context).size.height / 15,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              image: DecorationImage(
-                  image: AssetImage(
-                    'assets/avatars/avatar3.jpg',
+            child: FutureBuilder(
+              future: _getImage(context),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return Container(
+                    child: snapshot.data,
+                  );
+                }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Container(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                        image: AssetImage(
+                          'assets/avatars/avatar2.jpg',
+                        ),
+                        fit: BoxFit.cover),
                   ),
-                  fit: BoxFit.cover),
+                );
+              },
             ),
           ),
           Expanded(
@@ -43,11 +83,11 @@ class ChannelWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    'Lorem Ipsum',
+                    widget.name,
                     style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                   ),
                   Text(
-                    'This will the channel description',
+                    widget.description,
                     style: TextStyle(
                         color: Colors.black.withOpacity(0.5), fontSize: 13),
                   ),
@@ -56,6 +96,21 @@ class ChannelWidget extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Future<Widget> _getImage(BuildContext context) async {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+        image: DecorationImage(
+          image: NetworkImage(
+            widget.img,
+          ),
+          fit: BoxFit.cover,
+        ),
       ),
     );
   }

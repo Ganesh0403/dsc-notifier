@@ -8,6 +8,7 @@ import 'package:notification/screens/aboutUs.dart';
 import 'package:notification/screens/bookmark.dart';
 import 'package:notification/screens/channels.dart';
 import 'package:notification/screens/home.dart';
+import 'package:notification/screens/channels.dart';
 
 class HomePage extends StatelessWidget {
   // final userSnapshot;
