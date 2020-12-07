@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -13,10 +15,14 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  String uid;
+  User user;
+  List<ChannelWidget> dataList = [];
+  final FirebaseFirestore _firebaseFirestore=FirebaseFirestore.instance;
   getData(BuildContext context) async {
     print("Function called automatically !");
-    final user = await FirebaseAuth.instance.currentUser;
-    String uid = user.uid;
+    user = await FirebaseAuth.instance.currentUser;
+    uid = user.uid;
     final _userProvider = Provider.of<UserProvider>(context, listen: false);
     DocumentReference documentReference =
         FirebaseFirestore.instance.collection('users').document(uid);
@@ -39,6 +45,9 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildAppBar(BuildContext context) {
+    final _userProvider = Provider.of<UserProvider>(context);
+    Map<String, dynamic> _user = _userProvider.user;
+    _user['pNo']=snapshot;
     return AppBar(
       elevation: 0,
       backgroundColor: Colors.indigo,
@@ -55,10 +64,12 @@ class _ProfilePageState extends State<ProfilePage> {
           padding: const EdgeInsets.symmetric(horizontal: 5),
           child: IconButton(
             icon: Icon(
-              Icons.edit,
+              Icons.save,
               color: Colors.white,
             ),
-            onPressed: () {},
+            onPressed: () {
+              _firebaseFirestore.collection("users").doc(uid).set(_user);
+            },
           ),
         )
       ],
@@ -182,6 +193,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildChannelsList(BuildContext context) {
+    list();
     return Expanded(
       child: Container(
         width: double.infinity,
@@ -215,7 +227,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     child: Center(
                       child: Text(
-                        "8",
+                        dataList.length.toString(),
                         style: TextStyle(
                             color: Colors.indigo, fontWeight: FontWeight.w700),
                       ),
@@ -229,14 +241,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 padding: EdgeInsets.only(top: 10),
                 child: SingleChildScrollView(
                   child: Column(
-                    children: <Widget>[
-                      ChannelWidget(),
-                      ChannelWidget(),
-                      ChannelWidget(),
-                      ChannelWidget(),
-                      ChannelWidget(),
-                      ChannelWidget(),
-                    ],
+                    children: dataList,
                   ),
                 ),
               ),
@@ -245,6 +250,26 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       ),
     );
+  }
+  Future<void> list() async {
+    if(dataList.length!=0)return;
+    CollectionReference ref = Firestore.instance.collection('channels');
+    QuerySnapshot eventsQuery = await ref
+        .getDocuments();
+
+    eventsQuery.documents.forEach((document) {
+      print(document['name']);
+      setState(() {
+        dataList.add(
+          ChannelWidget(
+            img: document['img'],
+            uid: document.id,
+            name: document['name'],
+            description: document["description"],
+          ),
+        );
+      });
+    });
   }
 
   Widget _buildAvatar(BuildContext context) {
