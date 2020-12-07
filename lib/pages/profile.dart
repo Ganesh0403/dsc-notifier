@@ -34,6 +34,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     getData(context);
+    list();
     super.initState();
   }
 
@@ -193,7 +194,6 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildChannelsList(BuildContext context) {
-    list();
     return Expanded(
       child: Container(
         width: double.infinity,
@@ -252,7 +252,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
   Future<void> list() async {
-    if(dataList.length!=0)return;
+    // if(dataList.length!=0)return;
     CollectionReference ref = Firestore.instance.collection('channels');
     QuerySnapshot eventsQuery = await ref
         .getDocuments();

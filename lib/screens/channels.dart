@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:notification/widgets/channel.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -10,7 +11,7 @@ class ChannelsScreen extends StatelessWidget {
     return Container(
       padding: EdgeInsets.only(top: 10),
       child: StreamBuilder<QuerySnapshot>(
-          stream: _firebaseFirestore.collection("channels").snapshots(),
+          stream: _firebaseFirestore.collection("users").doc(FirebaseAuth.instance.currentUser.uid).collection("channels").snapshots(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return Center(

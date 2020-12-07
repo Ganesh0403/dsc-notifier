@@ -55,7 +55,7 @@ class PostWidget extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.grey,
               borderRadius: BorderRadius.circular(11),
-              image: DecorationImage(image: AssetImage(avatarUrl)),
+              image: DecorationImage(image: NetworkImage(avatarUrl)),
               border: Border.all(
                 width: 0.1,
                 color: Colors.black.withOpacity(0.5),
@@ -113,7 +113,7 @@ class PostWidget extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(13),
-        child: Image.asset(imageUrl, fit: BoxFit.fitWidth,),
+        child: Image.network(imageUrl, fit: BoxFit.fitWidth,),
       ),
     );
   }
