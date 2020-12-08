@@ -1,4 +1,6 @@
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
@@ -13,13 +15,23 @@ class PostPage extends StatefulWidget {
   final String imageUrl;
   final String textBody;
   final String fileCount;
+  final String channelId;
 
-  const PostPage({Key key, this.avatarUrl, this.channelName, this.authorName, this.date, this.imageUrl, this.textBody, this.fileCount}) : super(key: key);
+  const PostPage({Key key, this.avatarUrl, this.channelName, this.authorName, this.date, this.imageUrl, this.textBody, this.fileCount, this.channelId}) : super(key: key);
   @override
   _PostPageState createState() => _PostPageState();
 }
 
 class _PostPageState extends State<PostPage> {
+
+  bool isPresent=false;
+  String index;
+  @override
+  void initState() {
+    // TODO: implement initState
+    list("");
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,11 +53,53 @@ class _PostPageState extends State<PostPage> {
                 _buildTextBody(context),
                 SizedBox(height: 12,),
                 _buildFooter(context),
+                SizedBox(height: 12,),
+                buttonBuilder(),
               ]
           ),
         ),
       ),
     );
+  }
+  Future<void> list(String channel) async {
+    CollectionReference ref = Firestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).collection("channels");
+    QuerySnapshot eventsQuery = await ref
+        .getDocuments();
+    if(channel!=""){
+      await Firestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).collection("channels").document(index).delete();
+      return;
+    }
+    // if(dataList.length!=0)return;
+
+
+    eventsQuery.documents.forEach((document) {
+      if(document["id"]==widget.channelId){
+        index=document.documentID;
+        setState(() {
+          isPresent=true;
+        });
+        return;
+      }
+    });
+  }
+  Widget buttonBuilder(){
+    return FlatButton(onPressed: (){
+      if(!isPresent){
+        FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser.uid).collection("channels").add(<String,dynamic>{
+          "id":widget.channelId
+        });
+        setState(() {
+          isPresent=true;
+        });
+      }
+      else{
+          list("delete").then((value) {
+            setState(() {
+              isPresent=false;
+            });
+          });
+      }
+    }, child: isPresent?Text("UnSubscribe"):Text("Subscribe"),color: isPresent?Colors.grey:Colors.red,);
   }
   Widget _buildHeader(BuildContext context) {
     return Container(

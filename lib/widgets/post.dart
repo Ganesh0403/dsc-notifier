@@ -13,14 +13,15 @@ class PostWidget extends StatelessWidget {
   final String imageUrl;
   final String textBody;
   final String fileCount;
+  final String channelId;
 
-  PostWidget({this.avatarUrl,this.channelName,this.authorName,this.date,this.imageUrl,this.textBody,this.fileCount});
+  PostWidget({this.avatarUrl,this.channelName,this.authorName,this.date,this.imageUrl,this.textBody,this.fileCount, this.channelId});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: (){
-        Navigator.push(context, MaterialPageRoute(builder:(context) => PostPage(avatarUrl: avatarUrl,channelName: channelName,authorName: authorName,date: date,imageUrl: imageUrl,textBody: textBody,fileCount: fileCount,) ));
+        Navigator.push(context, MaterialPageRoute(builder:(context) => PostPage(avatarUrl: avatarUrl,channelName: channelName,authorName: authorName,date: date,imageUrl: imageUrl,textBody: textBody,fileCount: fileCount,channelId: channelId,) ));
       },
       child: Container(
         width: double.infinity,

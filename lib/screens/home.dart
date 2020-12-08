@@ -52,6 +52,7 @@ class HomeScreen extends StatelessWidget {
                   imageUrl: taskDetails["imageUrl"],
                   textBody: taskDetails["textBody"],
                   fileCount: taskDetails["fileCount"],
+                  channelId: taskDetails["id"],
                 ),
               );
             }
