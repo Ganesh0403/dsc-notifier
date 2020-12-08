@@ -1,11 +1,11 @@
+
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:notification/pages/postPage.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class PostWidget extends StatelessWidget {
-
+class PostPage extends StatefulWidget {
   final String avatarUrl;
   final String channelName;
   final String authorName;
@@ -14,42 +14,39 @@ class PostWidget extends StatelessWidget {
   final String textBody;
   final String fileCount;
 
-  PostWidget({this.avatarUrl,this.channelName,this.authorName,this.date,this.imageUrl,this.textBody,this.fileCount});
+  const PostPage({Key key, this.avatarUrl, this.channelName, this.authorName, this.date, this.imageUrl, this.textBody, this.fileCount}) : super(key: key);
+  @override
+  _PostPageState createState() => _PostPageState();
+}
 
+class _PostPageState extends State<PostPage> {
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: (){
-        Navigator.push(context, MaterialPageRoute(builder:(context) => PostPage(avatarUrl: avatarUrl,channelName: channelName,authorName: authorName,date: date,imageUrl: imageUrl,textBody: textBody,fileCount: fileCount,) ));
-      },
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border(
-            bottom: BorderSide(
-              color: Colors.black.withOpacity(0.7),
-              width: 0.15,
-            ),
-          )
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Post Details"
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _buildHeader(context),
-            SizedBox(height: 12,),
-            _buildImage(context),
-            SizedBox(height: 12,),
-            _buildTextBody(context),
-            SizedBox(height: 12,),
-            _buildFooter(context),
-          ],
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildHeader(context),
+                SizedBox(height: 12,),
+                _buildImage(context),
+                SizedBox(height: 12,),
+                _buildTextBody(context),
+                SizedBox(height: 12,),
+                _buildFooter(context),
+              ]
+          ),
         ),
       ),
     );
   }
-
   Widget _buildHeader(BuildContext context) {
     return Container(
       child: Row(
@@ -59,13 +56,13 @@ class PostWidget extends StatelessWidget {
             height: 45,
             width: 45,
             decoration: BoxDecoration(
-              color: Colors.grey,
-              borderRadius: BorderRadius.circular(11),
-              image: DecorationImage(image: NetworkImage(avatarUrl)),
-              border: Border.all(
-                width: 0.1,
-                color: Colors.black.withOpacity(0.5),
-              )
+                color: Colors.grey,
+                borderRadius: BorderRadius.circular(11),
+                image: DecorationImage(image: NetworkImage(widget.avatarUrl)),
+                border: Border.all(
+                  width: 0.1,
+                  color: Colors.black.withOpacity(0.5),
+                )
             ),
           ),
           Expanded(
@@ -79,18 +76,18 @@ class PostWidget extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top:3.0),
                     child: Text(
-                      channelName,
+                      widget.channelName,
                       style: GoogleFonts.rajdhani(textStyle: TextStyle(fontSize: 18,fontWeight: FontWeight.w600, height: 0.9)),
                     ),
                   ),
                   Text(
-                    authorName,
+                    widget.authorName,
                     style: GoogleFonts.rajdhani(textStyle: TextStyle(fontSize: 12,fontWeight: FontWeight.w500, height: 0.9)),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top:4),
                     child: Text(
-                      date,
+                      widget.date,
                       style: GoogleFonts.rajdhani(textStyle: TextStyle(fontSize: 12,fontWeight: FontWeight.w400, height: 0.8)),
                     ),
                   )
@@ -107,8 +104,8 @@ class PostWidget extends StatelessWidget {
           ),
         ],
       ),
-    ) ;    
-  }   
+    ) ;
+  }
 
   Widget _buildImage(BuildContext context) {
     return Container(
@@ -119,29 +116,29 @@ class PostWidget extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(13),
-        child: Image.network(imageUrl, fit: BoxFit.fitWidth,),
+        child: Image.network(widget.imageUrl, fit: BoxFit.fitWidth,),
       ),
     );
   }
 
   Widget _buildTextBody(BuildContext context) {
     return Container(
-      width: double.infinity,
-      child: Linkify(
-        onOpen: (link) async {
-          if (await canLaunch(link.url)) {
-            await launch(link.url);
-          } else {
-            throw "Could not launch $link";
-          }
-        },
-        text: textBody,
-        style: GoogleFonts.roboto(textStyle: TextStyle(fontSize: 14,height: 1.25)),
-        textAlign: TextAlign.justify,
-        linkStyle: TextStyle(
-          color: Colors.blue,
-        ),
-      )
+        width: double.infinity,
+        child: Linkify(
+          onOpen: (link) async {
+            if (await canLaunch(link.url)) {
+              await launch(link.url);
+            } else {
+              throw "Could not launch $link";
+            }
+          },
+          text: widget.textBody,
+          style: GoogleFonts.roboto(textStyle: TextStyle(fontSize: 14,height: 1.25)),
+          textAlign: TextAlign.justify,
+          linkStyle: TextStyle(
+            color: Colors.blue,
+          ),
+        )
     );
   }
 
@@ -149,13 +146,12 @@ class PostWidget extends StatelessWidget {
     return Container(
       width: double.infinity,
       child: Text(
-        fileCount,
-        style: GoogleFonts.rajdhani(textStyle: TextStyle(
-          color: Colors.black54,
-          fontSize: 12
-        ),)
+          widget.fileCount,
+          style: GoogleFonts.rajdhani(textStyle: TextStyle(
+              color: Colors.black54,
+              fontSize: 12
+          ),)
       ),
     );
   }
-
 }
