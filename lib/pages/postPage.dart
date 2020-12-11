@@ -73,7 +73,7 @@ class _PostPageState extends State<PostPage> {
 
 
     eventsQuery.documents.forEach((document) {
-      if(document["id"]==widget.channelId){
+      if(document["id"].toString().trim()==widget.channelId.trim()){
         index=document.documentID;
         setState(() {
           isPresent=true;
