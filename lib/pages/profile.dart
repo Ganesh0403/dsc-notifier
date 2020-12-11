@@ -17,7 +17,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   String uid;
   User user;
-  List<ChannelWidget> dataList = [];
+  List<Widget> dataList = [];
   final FirebaseFirestore _firebaseFirestore=FirebaseFirestore.instance;
   getData(BuildContext context) async {
     print("Function called automatically !");
@@ -253,22 +253,31 @@ class _ProfilePageState extends State<ProfilePage> {
   }
   Future<void> list() async {
     // if(dataList.length!=0)return;
-    CollectionReference ref = Firestore.instance.collection('channels');
+    CollectionReference ref = Firestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).collection('channels');
+    CollectionReference reference=Firestore.instance.collection('channels');
+    QuerySnapshot querySnapshot=await reference.getDocuments();
     QuerySnapshot eventsQuery = await ref
         .getDocuments();
 
     eventsQuery.documents.forEach((document) {
-      print(document['name']);
-      setState(() {
-        dataList.add(
-          ChannelWidget(
-            img: document['img'],
-            uid: document.id,
-            name: document['name'],
-            description: document["description"],
-          ),
-        );
+      querySnapshot.documents.forEach((element) {
+        if(element.id.toString().trim()==document['id'].toString().trim()){
+          // print("ok");
+          setState(() {
+            dataList.add(
+              GestureDetector(
+                child: ChannelWidget(
+                  img: element['img'],
+                  uid: element.id,
+                  name: element['name'],
+                  description: element["description"],
+                ),
+              ),
+            );
+          });
+        }
       });
+      // Firestore.instance.collection("channels").doc(document[''])
     });
   }
 
