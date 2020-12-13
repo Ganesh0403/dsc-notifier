@@ -1,31 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:notification/widgets/post.dart';
 
 class HomeScreen extends StatelessWidget {
 
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
-  // Future<void> list() async {
-  //   // if(dataList.length!=0)return;
-  //   CollectionReference ref = Firestore.instance.collection('channels');
-  //   QuerySnapshot eventsQuery = await ref
-  //       .getDocuments();
-  //
-  //   eventsQuery.documents.forEach((document) {
-  //     print(document['name']);
-  //     setState(() {
-  //       dataList.add(
-  //         ChannelWidget(
-  //           img: document['img'],
-  //           uid: document.id,
-  //           name: document['name'],
-  //           description: document["description"],
-  //         ),
-  //       );
-  //     });
-  //   });
-  // }
+  // final fcm=FirebaseMessaging();
   @override
   Widget build(BuildContext context) {
     return Container(
