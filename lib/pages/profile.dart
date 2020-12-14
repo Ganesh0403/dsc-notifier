@@ -1,10 +1,12 @@
 import 'dart:collection';
+// import 'dart:html';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:notification/main.dart';
+import 'package:notification/pages/editProfile.dart';
 import 'package:notification/providers/user.dart';
 import 'package:notification/widgets/channel.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +20,12 @@ class _ProfilePageState extends State<ProfilePage> {
   String uid;
   User user;
   List<Widget> dataList = [];
-  final FirebaseFirestore _firebaseFirestore=FirebaseFirestore.instance;
+  bool name=false;
+  bool roll=false;
+  bool bio=false;
+  Map<String, dynamic> _user;
+  TextEditingController uname,uroll,ubio;
+  final _firebaseFirestore=FirebaseFirestore.instance;
   getData(BuildContext context) async {
     print("Function called automatically !");
     user = await FirebaseAuth.instance.currentUser;
@@ -37,6 +44,13 @@ class _ProfilePageState extends State<ProfilePage> {
     list();
     super.initState();
   }
+  @override
+  void dispose() {
+    uname.dispose();
+    uroll.dispose();
+    ubio.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +61,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildAppBar(BuildContext context) {
     final _userProvider = Provider.of<UserProvider>(context);
-    Map<String, dynamic> _user = _userProvider.user;
+    _user = _userProvider.user;
+    uname=TextEditingController(text: _user['name']);
+    uroll=TextEditingController(text: _user['rNo']);
+    ubio=TextEditingController(text: _user['bio']);
     _user['pNo']=snapshot;
     return AppBar(
       elevation: 0,
@@ -65,11 +82,12 @@ class _ProfilePageState extends State<ProfilePage> {
           padding: const EdgeInsets.symmetric(horizontal: 5),
           child: IconButton(
             icon: Icon(
-              Icons.save,
+              Icons.edit,
               color: Colors.white,
             ),
             onPressed: () {
               _firebaseFirestore.collection("users").doc(uid).set(_user);
+              // Navigator.push(context, MaterialPageRoute(builder: (context)=>EditProfile(user: _user,)));
             },
           ),
         )
@@ -143,6 +161,101 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  Widget userName(){
+    // Text(
+    //   '${_user["name"]}',
+    //   style: GoogleFonts.ubuntu(fontSize: 20),
+    // )
+    if(name) return Center(
+      child: TextField(
+        onSubmitted: (newValue){
+          setState(() {
+            _user["name"]=newValue;
+            name=false;
+          });
+        },
+        controller: uname,
+        autofocus: true,
+      ),
+    );
+    return InkWell(
+      onTap: (){
+        setState(() {
+          name=true;
+          roll=false;
+          bio=false;
+        });
+      },
+      child: Text(
+        _user["name"],
+        style: GoogleFonts.ubuntu(fontSize: 20),
+      ),
+    );
+  }
+
+  Widget userBio(){
+    if(bio) return Center(
+      child: TextField(
+        onSubmitted: (newValue){
+          setState(() {
+            _user["bio"]=newValue;
+            bio=false;
+          });
+        },
+        controller: ubio,
+        autofocus: true,
+      ),
+    );
+    return InkWell(
+      onTap: (){
+        setState(() {
+          bio=true;
+          name=false;
+          roll=false;
+        });
+      },
+      child: Center(
+        child: Text(
+          _user["bio"],
+          textAlign: TextAlign.justify,
+          style:  GoogleFonts.ubuntu(
+              fontSize: 15,
+              height: 1.35,
+              color: Colors.black.withOpacity(0.8)),
+        ),
+      ),
+    );
+  }
+  Widget userRoll(){
+    if(roll) return Center(
+      child: TextField(
+        onSubmitted: (newValue){
+          setState(() {
+            _user["rNo"]=newValue;
+            roll=false;
+          });
+        },
+        controller: uroll,
+        autofocus: true,
+      ),
+    );
+    return InkWell(
+      onTap: (){
+        setState(() {
+          roll=true;
+          name=false;
+          bio=false;
+        });
+      },
+      child: Text(
+        _user["rNo"],
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 18.0,
+        ),
+      ),
+    );
+  }
   Widget _buildUserInfo(BuildContext context) {
     final _userProvider = Provider.of<UserProvider>(context);
     Map<String, dynamic> _user = _userProvider.user;
@@ -158,18 +271,17 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Text(
-            '${_user["name"]}',
-            style: GoogleFonts.ubuntu(fontSize: 20),
-          ),
-          Text(
-            '${_user["pNo"]} - ${_user["rNo"]}',
-            style: GoogleFonts.ubuntu(
-                fontSize: 16,
-                color: Colors.black.withOpacity(0.5),
-                fontWeight: FontWeight.w600,
-                height: 1.35),
-          ),
+          userName(),
+          Text('${_user["pNo"]}'),
+          userRoll(),
+          // Text(
+          //   '${_user["rNo"]}',
+          //   style: GoogleFonts.ubuntu(
+          //       fontSize: 16,
+          //       color: Colors.black.withOpacity(0.5),
+          //       fontWeight: FontWeight.w600,
+          //       height: 1.35),
+          // ),
         ],
       ),
     );
@@ -182,14 +294,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 20),
-      child: Center(
-        child: Text("${_user["bio"]}",
-            textAlign: TextAlign.justify,
-            style: GoogleFonts.ubuntu(
-                fontSize: 15,
-                height: 1.35,
-                color: Colors.black.withOpacity(0.8))),
-      ),
+      child: userBio(),
     );
   }
 
