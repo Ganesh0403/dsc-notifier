@@ -90,6 +90,7 @@ class _ChannelWidgetState extends State<ChannelWidget> {
                     widget.description,
                     style: TextStyle(
                         color: Colors.black.withOpacity(0.5), fontSize: 13),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
