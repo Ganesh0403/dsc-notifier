@@ -4,9 +4,9 @@ import 'dart:collection';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:notification/main.dart';
-import 'package:notification/pages/editProfile.dart';
 import 'package:notification/providers/user.dart';
 import 'package:notification/widgets/channel.dart';
 import 'package:provider/provider.dart';
@@ -82,12 +82,13 @@ class _ProfilePageState extends State<ProfilePage> {
           padding: const EdgeInsets.symmetric(horizontal: 5),
           child: IconButton(
             icon: Icon(
-              Icons.edit,
+              Icons.save,
               color: Colors.white,
             ),
             onPressed: () {
-              _firebaseFirestore.collection("users").doc(uid).set(_user);
-              // Navigator.push(context, MaterialPageRoute(builder: (context)=>EditProfile(user: _user,)));
+              _firebaseFirestore.collection("users").doc(uid).set(_user).whenComplete(() {
+                Fluttertoast.showToast(msg: "Successfully updated your data");
+              });
             },
           ),
         )
@@ -106,7 +107,11 @@ class _ProfilePageState extends State<ProfilePage> {
       color: Colors.indigo,
       height: double.infinity,
       width: double.infinity,
-      child: SingleChildScrollView(child: _buildStack(context)),
+      child: SingleChildScrollView(child: Column(
+        children: [
+          _buildStack(context),
+        ],
+      )),
     );
   }
 
@@ -149,7 +154,7 @@ class _ProfilePageState extends State<ProfilePage> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           Container(
-            height: imageHeight / 2,
+            height: imageHeight,
             width: double.infinity,
             color: Colors.transparent,
           ),
@@ -392,7 +397,7 @@ class _ProfilePageState extends State<ProfilePage> {
     double _leftOffset =
         MediaQuery.of(context).size.width / 2 - (_imageWidth) / 2;
     double _bottomOffset =
-        MediaQuery.of(context).size.height / 1.3 - (_imageHeight) / 2;
+        MediaQuery.of(context).size.height / 1.3 - (_imageHeight);
 
     return Positioned(
       bottom: _bottomOffset,

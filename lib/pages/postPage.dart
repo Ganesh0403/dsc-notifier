@@ -99,7 +99,7 @@ class _PostPageState extends State<PostPage> {
   Widget buttonBuilder(){
     return FlatButton(onPressed: (){
       if(!isPresent){
-        fcm.subscribeToTopic('jkl');
+        fcm.subscribeToTopic(widget.channelId.trim());
         FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser.uid).collection("channels").add(<String,dynamic>{
           "id":widget.channelId
         });
@@ -108,7 +108,7 @@ class _PostPageState extends State<PostPage> {
         });
       }
       else{
-        fcm.unsubscribeFromTopic('jkl');
+        fcm.unsubscribeFromTopic(widget.channelId.trim());
           list("delete").then((value) {
             setState(() {
               isPresent=false;
