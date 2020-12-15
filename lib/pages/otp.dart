@@ -111,14 +111,15 @@ class _OtpPageState extends State<OtpPage> {
                     ),
                   ),
                 ) 
-                : isEnable
-                  ? _buildverifyButton(context)
-                  : _buildDisabledButton(context)
+                : Container()
               ],
             ),
           ),
         ),
       ),
+     bottomNavigationBar: (isEnable && !isLoading)
+         ? _buildverifyButton(context)
+         : _buildDisabledButton(context),
     );
   }
 

@@ -179,16 +179,16 @@ class _LoginPageState extends State<LoginPage> {
         key: ValueKey('number'),
         onFieldSubmitted: (String pNo) {
           setState(() {
-            this.phoneNumber = '+' + pNo;
+            this.phoneNumber = '+91' + pNo;
             snapshot = this.phoneNumber;
           });
         },
         onChanged: (String pNo) {
-          this.phoneNumber = '+' + pNo;
+          this.phoneNumber = '+91' + pNo;
           snapshot = this.phoneNumber;
         },
         validator: (value) {
-          if (value.length != 12 || value.isEmpty) {
+          if (value.length != 10 || value.isEmpty) {
             return "Enter a valid phone number !";
           } else {
             return null;
