@@ -28,22 +28,24 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
       return Developer.fromJson(jsonDecode(response.body));
     }
     else{
-      throw Exception("Failed to load developer");
+      return null;
     }
   }
   developers(){
     list.forEach((element) {
       fetchDeveloper(element).then((value){
-        setState(() {
-          dataList.add(
-              ChannelWidget(
-                img: value.avatarUrl.toString(),
-                uid: "okok",
-                name: value.login.toString(),
-                description: value.bio.toString(),
-              )
-          );
-        });
+        if(value!=null){
+          setState(() {
+            dataList.add(
+                ChannelWidget(
+                  img: value.avatarUrl.toString(),
+                  uid: "okok",
+                  name: value.login.toString(),
+                  description: value.bio.toString(),
+                )
+            );
+          });
+        }
       });
     });
   }
@@ -81,7 +83,6 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
   }
   @override
   void initState() {
-    // TODO: implement initState
     developers();
     super.initState();
   }

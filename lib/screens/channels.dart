@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:notification/database/moor_database.dart';
 import 'package:notification/widgets/channel.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:notification/widgets/post.dart';
@@ -93,14 +94,15 @@ class ChannelScreen extends StatelessWidget {
                 var taskDetails = tasksData.data();
                 dataList.add(
                   PostWidget(
-                    avatarUrl: taskDetails["avatarUrl"],
-                    channelName: taskDetails["channelName"],
-                    authorName: taskDetails["authorName"],
-                    date: taskDetails["date"],
-                    imageUrl: taskDetails["imageUrl"],
-                    textBody: taskDetails["textBody"],
-                    fileCount: taskDetails["fileCount"],
-                    channelId: taskDetails["id"],
+                    circular: new Circular(
+                        avatarUrl: taskDetails["avatarUrl"],
+                        channelName: taskDetails["channelName"],
+                        authorName: taskDetails["authorName"],
+                        date: taskDetails["date"],
+                        imageUrl: taskDetails["imageUrl"],
+                        textBody: taskDetails["textBody"],
+                        fileCount:  taskDetails["fileCount"],
+                        channelId: taskDetails["id"]),
                   ),
                 );
               }
