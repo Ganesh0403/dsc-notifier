@@ -26,7 +26,10 @@ class PostWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: (){
-        Navigator.push(context, MaterialPageRoute(builder:(context) => PostPage(avatarUrl: circular.avatarUrl,channelName: circular.channelName,authorName: circular.authorName,date: circular.date,imageUrl: circular.imageUrl,textBody: circular.textBody,fileCount: circular.fileCount,channelId: circular.channelId,) ));
+        Navigator.push(context, MaterialPageRoute(builder:(context) => PostPage(
+          dataFromDatabase: dataFromDatabase,
+          circular: new Circular(avatarUrl: circular.avatarUrl,channelName: circular.channelName,authorName: circular.authorName,date: circular.date,imageUrl: circular.imageUrl,textBody: circular.textBody,fileCount: circular.fileCount,channelId: circular.channelId,),
+        ) ));
       },
       child: Container(
         width: double.infinity,

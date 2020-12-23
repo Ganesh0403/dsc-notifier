@@ -5,20 +5,19 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:notification/database/moor_database.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PostPage extends StatefulWidget {
-  final String avatarUrl;
-  final String channelName;
-  final String authorName;
-  final String date;
-  final String imageUrl;
-  final String textBody;
-  final String fileCount;
-  final String channelId;
+  final bool dataFromDatabase;
+  final Circular circular;
 
-  const PostPage({Key key, this.avatarUrl, this.channelName, this.authorName, this.date, this.imageUrl, this.textBody, this.fileCount, this.channelId}) : super(key: key);
+  const PostPage({Key key, this.dataFromDatabase, this.circular}) : super(key: key);
+
+  // PostWidget({this.dataFromDatabase=false, this.circular});
   @override
   _PostPageState createState() => _PostPageState();
 }
@@ -30,7 +29,6 @@ class _PostPageState extends State<PostPage> {
   final fcm=FirebaseMessaging();
   @override
   void initState() {
-    // TODO: implement initState
     list("");
     print("check check");
     fcm.configure(
@@ -83,11 +81,10 @@ class _PostPageState extends State<PostPage> {
       await Firestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).collection("channels").document(index).delete();
       return;
     }
-    // if(dataList.length!=0)return;
 
 
     eventsQuery.documents.forEach((document) {
-      if(document["id"].toString().trim()==widget.channelId.trim()){
+      if(document["id"].toString().trim()==widget.circular.channelId.trim()){
         index=document.documentID;
         setState(() {
           isPresent=true;
@@ -99,16 +96,16 @@ class _PostPageState extends State<PostPage> {
   Widget buttonBuilder(){
     return FlatButton(onPressed: (){
       if(!isPresent){
-        fcm.subscribeToTopic(widget.channelId.trim());
+        fcm.subscribeToTopic(widget.circular.channelId.trim());
         FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser.uid).collection("channels").add(<String,dynamic>{
-          "id":widget.channelId
+          "id":widget.circular.channelId
         });
         setState(() {
           isPresent=true;
         });
       }
       else{
-        fcm.unsubscribeFromTopic(widget.channelId.trim());
+        fcm.unsubscribeFromTopic(widget.circular.channelId.trim());
           list("delete").then((value) {
             setState(() {
               isPresent=false;
@@ -118,6 +115,7 @@ class _PostPageState extends State<PostPage> {
     }, child: isPresent?Text("UnSubscribe"):Text("Subscribe"),color: isPresent?Colors.grey:Colors.red,);
   }
   Widget _buildHeader(BuildContext context) {
+    final database=Provider.of<AppDatabase>(context);
     return Container(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -128,7 +126,7 @@ class _PostPageState extends State<PostPage> {
             decoration: BoxDecoration(
                 color: Colors.grey,
                 borderRadius: BorderRadius.circular(11),
-                image: DecorationImage(image: NetworkImage(widget.avatarUrl)),
+                image: DecorationImage(image: NetworkImage(widget.circular.avatarUrl)),
                 border: Border.all(
                   width: 0.1,
                   color: Colors.black.withOpacity(0.5),
@@ -146,18 +144,18 @@ class _PostPageState extends State<PostPage> {
                   Padding(
                     padding: const EdgeInsets.only(top:3.0),
                     child: Text(
-                      widget.channelName,
+                      widget.circular.channelName,
                       style: GoogleFonts.rajdhani(textStyle: TextStyle(fontSize: 18,fontWeight: FontWeight.w600, height: 0.9)),
                     ),
                   ),
                   Text(
-                    widget.authorName,
+                    widget.circular.authorName,
                     style: GoogleFonts.rajdhani(textStyle: TextStyle(fontSize: 12,fontWeight: FontWeight.w500, height: 0.9)),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top:4),
                     child: Text(
-                      widget.date,
+                      widget.circular.date,
                       style: GoogleFonts.rajdhani(textStyle: TextStyle(fontSize: 12,fontWeight: FontWeight.w400, height: 0.8)),
                     ),
                   )
@@ -168,7 +166,16 @@ class _PostPageState extends State<PostPage> {
           Container(
             child: Row(
               children: [
-                IconButton(color: Colors.black.withOpacity(0.75), padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10), constraints: BoxConstraints(),icon: Icon(Icons.bookmark_border), onPressed: (){}),
+                IconButton(color: Colors.black.withOpacity(0.75), padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10), constraints: BoxConstraints(),icon: Icon((widget.dataFromDatabase?Icons.delete:Icons.bookmark_border)), onPressed: (){
+                  if(widget.dataFromDatabase){
+                    database.deleteCircular(widget.circular);
+                  }
+                  else{
+                    database.insertCircular(widget.circular).whenComplete((){
+                      Fluttertoast.showToast(msg: "Successfully added this post to database");
+                    });
+                  }
+                }),
               ],
             ),
           ),
@@ -186,7 +193,7 @@ class _PostPageState extends State<PostPage> {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(13),
-        child: Image.network(widget.imageUrl, fit: BoxFit.fitWidth,),
+        child: Image.network(widget.circular.imageUrl, fit: BoxFit.fitWidth,),
       ),
     );
   }
@@ -202,7 +209,7 @@ class _PostPageState extends State<PostPage> {
               throw "Could not launch $link";
             }
           },
-          text: widget.textBody,
+          text: widget.circular.textBody,
           style: GoogleFonts.roboto(textStyle: TextStyle(fontSize: 14,height: 1.25)),
           textAlign: TextAlign.justify,
           linkStyle: TextStyle(
@@ -216,7 +223,7 @@ class _PostPageState extends State<PostPage> {
     return Container(
       width: double.infinity,
       child: Text(
-          widget.fileCount,
+          widget.circular.fileCount,
           style: GoogleFonts.rajdhani(textStyle: TextStyle(
               color: Colors.black54,
               fontSize: 12
