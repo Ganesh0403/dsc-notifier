@@ -21,7 +21,7 @@ class _OtpPageState extends State<OtpPage> {
   bool isEnable = false;
   @override
   Widget build(BuildContext context) {
-   return Scaffold(
+    return Scaffold(
       backgroundColor: Colors.indigo,
       body: Center(
         child: Padding(
@@ -51,9 +51,9 @@ class _OtpPageState extends State<OtpPage> {
                 ),
                 PinCodeTextField(
                   textStyle: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700
                   ),
                   keyboardType: TextInputType.number,
                   errorTextSpace: 40,
@@ -64,7 +64,7 @@ class _OtpPageState extends State<OtpPage> {
                     inactiveColor: Colors.white.withOpacity(0.5),
                     activeColor: Colors.white.withOpacity(1),
                     fieldWidth: 35,
-                    borderWidth: 1, 
+                    borderWidth: 1,
                     selectedColor: Colors.white,
                   ),
                   onChanged: (pin) {
@@ -101,8 +101,8 @@ class _OtpPageState extends State<OtpPage> {
                 SizedBox(
                   height: 265,
                 ),
-                isLoading 
-                ? Container(
+                isLoading
+                    ? Container(
                   height: 60,
                   child: Center(
                     child: CircularProgressIndicator(
@@ -110,16 +110,16 @@ class _OtpPageState extends State<OtpPage> {
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                     ),
                   ),
-                ) 
-                : Container()
+                )
+                    : Container()
               ],
             ),
           ),
         ),
       ),
-     bottomNavigationBar: (isEnable && !isLoading)
-         ? _buildverifyButton(context)
-         : _buildDisabledButton(context),
+      bottomNavigationBar: (isEnable && !isLoading)
+          ? _buildverifyButton(context)
+          : _buildDisabledButton(context),
     );
   }
 
@@ -134,41 +134,24 @@ class _OtpPageState extends State<OtpPage> {
           setState(() {
             isLoading = true;
           });
+
           FirebaseAuth auth = FirebaseAuth.instance;
           AuthCredential _credential = await PhoneAuthProvider.getCredential(verificationId: widget.verid, smsCode: smsCode);
           print("Credential ==> $_credential");
           auth.signInWithCredential(_credential)
-          .then((value) {
-            print("Successfully verified");
-            final user = FirebaseAuth.instance.currentUser;
-            String uid = user.uid;
-            DocumentReference documentReference = FirebaseFirestore.instance.collection('users').document(uid);
-            documentReference.get()
-            .then((snapshot) => {
-              if (snapshot.exists) {
-                print("======== Exists ! ========")
-              } else {
-                documentReference.set({
-                  "uid":uid,
-                  "name":"Enter Your Name",
-                  "pNo":"Number",
-                  "rNo":"Roll Number",
-                  "bio":"Enter your bio"
-                })
-              }
-            });
-            Get.offAndToNamed("/homePage");
+              .then((value) {
+                onClick();
           })
-          .catchError((error){print("Error");});
-          
+              .catchError((error){print("Error");});
+
         },
         splashColor: Colors.grey.withOpacity(0.5),
         child: Container(
           height: 60,
           width: double.infinity,
           decoration: BoxDecoration(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(12)
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(12)
           ),
           child: Center(
             child: Text(
@@ -204,6 +187,27 @@ class _OtpPageState extends State<OtpPage> {
         ),
       ),
     );
-  } 
+  }
 
+}
+void onClick(){
+  print("Successfully verified");
+  final user = FirebaseAuth.instance.currentUser;
+  String uid = user.uid;
+  DocumentReference documentReference = FirebaseFirestore.instance.collection('users').document(uid);
+  documentReference.get()
+      .then((snapshot) => {
+    if (snapshot.exists) {
+      print("======== Exists ! ========")
+    } else {
+      documentReference.set({
+        "uid":uid,
+        "name":"Enter Your Name",
+        "pNo":"Number",
+        "rNo":"Roll Number",
+        "bio":"Enter your bio"
+      })
+    }
+  });
+  Get.offAndToNamed("/homePage");
 }

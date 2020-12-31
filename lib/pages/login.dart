@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:notification/main.dart';
+import 'package:notification/pages/otp.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -25,6 +26,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> verifyPhone() async {
+    var firebaseAuth = await FirebaseAuth.instance;
     final PhoneCodeSent smsCodeSent = (String verId, [int forceCodeResend]) {
       this.verificationId = verId;
       print("==========> Sent <==========");
@@ -42,12 +44,15 @@ class _LoginPageState extends State<LoginPage> {
       print(error.message);
     };
 
-    final PhoneVerificationCompleted verifiedSuccess = (AuthCredential auth) {
+    final PhoneVerificationCompleted verifiedSuccess = (PhoneAuthCredential auth) async {
       print("Success !");
       print(auth.toString());
+      await firebaseAuth.signInWithCredential(auth).then((value) => onClick());
+      // onClick(auth);
+      // await auth.si
     };
 
-    var firebaseAuth = await FirebaseAuth.instance;
+
     firebaseAuth.verifyPhoneNumber(
       phoneNumber: '+' + phoneNumber,
       timeout: Duration(seconds: 6),
