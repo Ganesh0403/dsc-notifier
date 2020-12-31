@@ -12,10 +12,9 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PostPage extends StatefulWidget {
-  final bool dataFromDatabase;
   final Circular circular;
 
-  const PostPage({Key key, this.dataFromDatabase, this.circular}) : super(key: key);
+  const PostPage({Key key, this.circular}) : super(key: key);
 
   // PostWidget({this.dataFromDatabase=false, this.circular});
   @override
@@ -115,7 +114,6 @@ class _PostPageState extends State<PostPage> {
     }, child: isPresent?Text("UnSubscribe"):Text("Subscribe"),color: isPresent?Colors.grey:Colors.red,);
   }
   Widget _buildHeader(BuildContext context) {
-    final database=Provider.of<AppDatabase>(context);
     return Container(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -161,22 +159,6 @@ class _PostPageState extends State<PostPage> {
                   )
                 ],
               ),
-            ),
-          ),
-          Container(
-            child: Row(
-              children: [
-                IconButton(color: Colors.black.withOpacity(0.75), padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10), constraints: BoxConstraints(),icon: Icon((widget.dataFromDatabase?Icons.delete:Icons.bookmark_border)), onPressed: (){
-                  if(widget.dataFromDatabase){
-                    database.deleteCircular(widget.circular);
-                  }
-                  else{
-                    database.insertCircular(widget.circular).whenComplete((){
-                      Fluttertoast.showToast(msg: "Successfully added this post to database");
-                    });
-                  }
-                }),
-              ],
             ),
           ),
         ],

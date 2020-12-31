@@ -8,15 +8,6 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PostWidget extends StatelessWidget {
-
-  // final String avatarUrl;
-  // final String channelName;
-  // final String authorName;
-  // final String date;
-  // final String imageUrl;
-  // final String textBody;
-  // final String fileCount;
-  // final String channelId;
   final bool dataFromDatabase;
   final Circular circular;
 
@@ -27,7 +18,6 @@ class PostWidget extends StatelessWidget {
     return GestureDetector(
       onTap: (){
         Navigator.push(context, MaterialPageRoute(builder:(context) => PostPage(
-          dataFromDatabase: dataFromDatabase,
           circular: new Circular(avatarUrl: circular.avatarUrl,channelName: circular.channelName,authorName: circular.authorName,date: circular.date,imageUrl: circular.imageUrl,textBody: circular.textBody,fileCount: circular.fileCount,channelId: circular.channelId,),
         ) ));
       },
