@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -19,12 +20,27 @@ class _LoginPageState extends State<LoginPage> {
     final isValid = _formKey.currentState.validate();
     FocusScope.of(context).unfocus();
     if (isValid) {
-      print(phoneNumber);
-      verifyPhone();
+      print("number is $phoneNumber");
+      checkUser().then((value){
+        if(value)verifyPhone();
+      } );
+      // verifyPhone();
     } else
       print("Invalid");
   }
 
+  Future<bool> checkUser()async{
+    bool isPresent=false;
+    CollectionReference ref = Firestore.instance.collection('users');
+    QuerySnapshot eventsQuery = await ref
+        .getDocuments();
+    eventsQuery.documents.forEach((document) {
+      if(document["pNo"].toString().trim()==phoneNumber.toString().trim()){
+        isPresent=true;
+      }
+    });
+    return isPresent;
+  }
   Future<void> verifyPhone() async {
     var firebaseAuth = await FirebaseAuth.instance;
     final PhoneCodeSent smsCodeSent = (String verId, [int forceCodeResend]) {
