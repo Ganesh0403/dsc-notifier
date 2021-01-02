@@ -13,8 +13,9 @@ import 'package:url_launcher/url_launcher.dart';
 
 class PostPage extends StatefulWidget {
   final Circular circular;
+  final List files;
 
-  const PostPage({Key key, this.circular}) : super(key: key);
+  const PostPage({Key key, this.circular, this.files}) : super(key: key);
 
   // PostWidget({this.dataFromDatabase=false, this.circular});
   @override
@@ -63,6 +64,7 @@ class _PostPageState extends State<PostPage> {
                 SizedBox(height: 12,),
                 _buildTextBody(context),
                 SizedBox(height: 12,),
+                _buildLinkBody(context),
                 _buildFooter(context),
                 SizedBox(height: 12,),
                 buttonBuilder(),
@@ -112,6 +114,40 @@ class _PostPageState extends State<PostPage> {
           });
       }
     }, child: isPresent?Text("UnSubscribe"):Text("Subscribe"),color: isPresent?Colors.grey:Colors.red,);
+  }
+  Widget _buildLinkBody(BuildContext context){
+    if(widget.files==null)return Container();
+    return Column(
+      children: [
+        ListView.separated(
+            itemCount: widget.files.length,
+            shrinkWrap: true,
+            separatorBuilder: (BuildContext context,int index){
+              return SizedBox(height: 12,);
+            },
+            itemBuilder:(BuildContext context,int index){
+              return Linkify(
+                onOpen: (link) async {
+                  if (await canLaunch(link.url)) {
+                    await launch(link.url);
+                  } else {
+                    throw "Could not launch $link";
+                  }
+                },
+                text: "File${index+1}:${widget.files[index]}",
+                style: GoogleFonts.roboto(textStyle: TextStyle(fontSize: 14,height: 1.25)),
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.justify,
+                linkStyle: TextStyle(
+                  color: Colors.blue,
+                ),
+              );
+            }),
+        SizedBox(height: 12,),
+      ],
+    );
+
+
   }
   Widget _buildHeader(BuildContext context) {
     return Container(
@@ -205,7 +241,7 @@ class _PostPageState extends State<PostPage> {
     return Container(
       width: double.infinity,
       child: Text(
-          widget.circular.fileCount,
+          (widget.files!=null)?widget.files.length.toString():"0",
           style: GoogleFonts.rajdhani(textStyle: TextStyle(
               color: Colors.black54,
               fontSize: 12

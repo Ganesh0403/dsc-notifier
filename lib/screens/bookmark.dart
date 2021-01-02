@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:notification/database/moor_database.dart';
 import 'package:notification/widgets/post.dart';
 import 'package:provider/provider.dart';
@@ -20,11 +21,11 @@ class BookMarkScreen extends StatelessWidget {
             }
             final taskListFromFirebase = snapshot.data??List();
             List<PostWidget> dataList = [];
+            var box=Hive.box('myBox');
             for (var tasksData in taskListFromFirebase) {
-              // print(tasksData);
-              // var taskDetails = tasksData.data();
               dataList.add(
                 PostWidget(
+                  files: box.get(tasksData.id),
                   circular: tasksData,
                   dataFromDatabase: true,
                 ),

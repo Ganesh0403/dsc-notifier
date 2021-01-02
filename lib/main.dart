@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'package:notification/configuration/local.dart';
 import 'package:notification/database/moor_database.dart';
 import 'package:notification/pages/home.dart';
@@ -11,6 +14,7 @@ import 'package:notification/pages/otp.dart';
 import 'package:notification/pages/profile.dart';
 import 'package:notification/pages/splash.dart';
 import 'package:notification/providers/user.dart';
+import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:provider/provider.dart';
 
 import 'providers/user.dart';
@@ -22,6 +26,10 @@ void main() async {
   // Get.put(Controller);
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  final appDir=await path_provider.getApplicationDocumentsDirectory();
+
+  Hive.init(appDir.path);
+  await Hive.openBox('myBox');
   runApp(App());
 }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive/hive.dart';
 import 'package:notification/database/moor_database.dart';
 import 'package:notification/pages/postPage.dart';
 import 'package:provider/provider.dart';
@@ -10,8 +11,9 @@ import 'package:url_launcher/url_launcher.dart';
 class PostWidget extends StatelessWidget {
   final bool dataFromDatabase;
   final Circular circular;
+  final List files;
 
-  PostWidget({this.dataFromDatabase=false, this.circular});
+  PostWidget({this.dataFromDatabase=false, this.circular, this.files});
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +21,7 @@ class PostWidget extends StatelessWidget {
       onTap: (){
         Navigator.push(context, MaterialPageRoute(builder:(context) => PostPage(
           circular: new Circular(avatarUrl: circular.avatarUrl,channelName: circular.channelName,authorName: circular.authorName,date: circular.date,imageUrl: circular.imageUrl,textBody: circular.textBody,fileCount: circular.fileCount,channelId: circular.channelId,),
+          files: files,
         ) ));
       },
       child: Container(
@@ -42,6 +45,7 @@ class PostWidget extends StatelessWidget {
             SizedBox(height: 12,),
             _buildTextBody(context),
             SizedBox(height: 12,),
+            _buildLinkBody(context),
             _buildFooter(context),
           ],
         ),
@@ -102,12 +106,17 @@ class PostWidget extends StatelessWidget {
             child: Row(
               children: [
                 IconButton(color: Colors.black.withOpacity(0.75), padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10), constraints: BoxConstraints(),icon: Icon((dataFromDatabase?Icons.delete:Icons.bookmark_border)), onPressed: (){
+                  var box=Hive.box('myBox');
                   if(dataFromDatabase){
+                    box.delete(circular.id);
                     database.deleteCircular(circular);
                   }
                   else{
+                    print(circular.id);
                     database.insertCircular(circular).whenComplete((){
                       Fluttertoast.showToast(msg: "Successfully added this post to database");
+                    }).then((value){
+                      box.put(value, files);
                     });
                   }
                 }),
@@ -133,6 +142,40 @@ class PostWidget extends StatelessWidget {
     );
   }
 
+  Widget _buildLinkBody(BuildContext context){
+          if(files==null)return Container();
+          return Column(
+            children: [
+              ListView.separated(
+                itemCount: files.length,
+                  shrinkWrap: true,
+                  separatorBuilder: (BuildContext context,int index){
+                  return SizedBox(height: 12,);
+                  },
+                  itemBuilder:(BuildContext context,int index){
+                return Linkify(
+                  onOpen: (link) async {
+                    if (await canLaunch(link.url)) {
+                      await launch(link.url);
+                    } else {
+                      throw "Could not launch $link";
+                    }
+                  },
+                  text: "File${index+1}:${files[index]}",
+                  style: GoogleFonts.roboto(textStyle: TextStyle(fontSize: 14,height: 1.25)),
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.justify,
+                  linkStyle: TextStyle(
+                    color: Colors.blue,
+                  ),
+                );
+              }),
+              SizedBox(height: 12,),
+            ],
+          );
+
+
+  }
   Widget _buildTextBody(BuildContext context) {
     return Container(
       width: double.infinity,
@@ -158,7 +201,7 @@ class PostWidget extends StatelessWidget {
     return Container(
       width: double.infinity,
       child: Text(
-          circular.fileCount,
+          (files!=null)?files.length.toString():"0",
         style: GoogleFonts.rajdhani(textStyle: TextStyle(
           color: Colors.black54,
           fontSize: 12
