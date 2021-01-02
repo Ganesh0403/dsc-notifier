@@ -83,18 +83,18 @@ class PostWidget extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top:3.0),
                     child: Text(
-                      circular.channelName,
+                      circular.channelName.toString(),
                       style: GoogleFonts.rajdhani(textStyle: TextStyle(fontSize: 18,fontWeight: FontWeight.w600, height: 0.9)),
                     ),
                   ),
                   Text(
-                    circular.authorName,
+                    circular.authorName.toString(),
                     style: GoogleFonts.rajdhani(textStyle: TextStyle(fontSize: 12,fontWeight: FontWeight.w500, height: 0.9)),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top:4),
                     child: Text(
-                      circular.date,
+                      circular.date.toString(),
                       style: GoogleFonts.rajdhani(textStyle: TextStyle(fontSize: 12,fontWeight: FontWeight.w400, height: 0.8)),
                     ),
                   )
@@ -187,7 +187,7 @@ class PostWidget extends StatelessWidget {
             throw "Could not launch $link";
           }
         },
-        text: circular.textBody,
+        text: circular.textBody.toString(),
         style: GoogleFonts.roboto(textStyle: TextStyle(fontSize: 14,height: 1.25)),
         textAlign: TextAlign.justify,
         linkStyle: TextStyle(
