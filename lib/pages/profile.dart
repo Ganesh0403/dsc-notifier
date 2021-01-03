@@ -4,12 +4,14 @@ import 'dart:collection';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:notification/main.dart';
 import 'package:notification/providers/user.dart';
 import 'package:notification/widgets/channel.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -20,11 +22,9 @@ class _ProfilePageState extends State<ProfilePage> {
   String uid;
   User user;
   List<Widget> dataList = [];
-  bool name=false;
-  bool roll=false;
   bool bio=false;
   Map<String, dynamic> _user;
-  TextEditingController uname,uroll,ubio;
+  TextEditingController ubio;
   final _firebaseFirestore=FirebaseFirestore.instance;
   getData(BuildContext context) async {
     print("Function called automatically !");
@@ -36,18 +36,16 @@ class _ProfilePageState extends State<ProfilePage> {
     documentReference
         .get()
         .then((snapshot) => {_userProvider.setUser(snapshot.data())});
+    list();
   }
 
   @override
   void initState() {
     getData(context);
-    list();
     super.initState();
   }
   @override
   void dispose() {
-    uname.dispose();
-    uroll.dispose();
     ubio.dispose();
     super.dispose();
   }
@@ -62,9 +60,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildAppBar(BuildContext context) {
     final _userProvider = Provider.of<UserProvider>(context);
     _user = _userProvider.user;
-    uname=TextEditingController(text: _user['name']);
-    uroll=TextEditingController(text: _user['rNo']);
-    ubio=TextEditingController(text: _user['bio']);
+    ubio=TextEditingController(text: _user['bio'].toString());
     _user['pNo']=snapshot;
     return AppBar(
       elevation: 0,
@@ -167,30 +163,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget userName(){
-    // Text(
-    //   '${_user["name"]}',
-    //   style: GoogleFonts.ubuntu(fontSize: 20),
-    // )
-    if(name) return Center(
-      child: TextField(
-        onSubmitted: (newValue){
-          setState(() {
-            _user["name"]=newValue;
-            name=false;
-          });
-        },
-        controller: uname,
-        autofocus: true,
-      ),
-    );
     return InkWell(
-      onTap: (){
-        setState(() {
-          name=true;
-          roll=false;
-          bio=false;
-        });
-      },
       child: Text(
         _user["name"],
         style: GoogleFonts.ubuntu(fontSize: 20),
@@ -215,43 +188,32 @@ class _ProfilePageState extends State<ProfilePage> {
       onTap: (){
         setState(() {
           bio=true;
-          name=false;
-          roll=false;
         });
       },
       child: Center(
-        child: Text(
-          _user["bio"],
-          textAlign: TextAlign.justify,
-          style:  GoogleFonts.ubuntu(
+        child: Linkify(
+          onOpen: (link) async {
+            if (await canLaunch(link.url)) {
+              await launch(link.url);
+            } else {
+              throw "Could not launch $link";
+            }
+          },
+          text: _user["bio"],
+          style: GoogleFonts.ubuntu(
               fontSize: 15,
               height: 1.35,
               color: Colors.black.withOpacity(0.8)),
+          textAlign: TextAlign.justify,
+          linkStyle: TextStyle(
+            color: Colors.blue,
+          ),
         ),
       ),
     );
   }
   Widget userRoll(){
-    if(roll) return Center(
-      child: TextField(
-        onSubmitted: (newValue){
-          setState(() {
-            _user["rNo"]=newValue;
-            roll=false;
-          });
-        },
-        controller: uroll,
-        autofocus: true,
-      ),
-    );
     return InkWell(
-      onTap: (){
-        setState(() {
-          roll=true;
-          name=false;
-          bio=false;
-        });
-      },
       child: Text(
         _user["rNo"],
         style: TextStyle(
@@ -277,24 +239,14 @@ class _ProfilePageState extends State<ProfilePage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           userName(),
-          Text('${_user["pNo"]}'),
+          Text('${_user["pNo"].toString()}'),
           userRoll(),
-          // Text(
-          //   '${_user["rNo"]}',
-          //   style: GoogleFonts.ubuntu(
-          //       fontSize: 16,
-          //       color: Colors.black.withOpacity(0.5),
-          //       fontWeight: FontWeight.w600,
-          //       height: 1.35),
-          // ),
         ],
       ),
     );
   }
 
   Widget _buildUserBio(BuildContext context) {
-    final _userProvider = Provider.of<UserProvider>(context);
-    Map<String, dynamic> _user = _userProvider.user;
 
     return Container(
       width: double.infinity,
@@ -362,32 +314,26 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
   Future<void> list() async {
-    // if(dataList.length!=0)return;
-    CollectionReference ref = Firestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).collection('channels');
+    List channels=_user["subscriptions"];
     CollectionReference reference=Firestore.instance.collection('channels');
     QuerySnapshot querySnapshot=await reference.getDocuments();
-    QuerySnapshot eventsQuery = await ref
-        .getDocuments();
 
-    eventsQuery.documents.forEach((document) {
+    channels.forEach((document) {
       querySnapshot.documents.forEach((element) {
         if(element.id.toString().trim()==document['id'].toString().trim()){
           // print("ok");
           setState(() {
             dataList.add(
-              GestureDetector(
-                child: ChannelWidget(
-                  img: element['img'],
-                  uid: element.id,
-                  name: element['name'],
-                  description: element["description"],
-                ),
+              ChannelWidget(
+                img: element['img'],
+                uid: element.id,
+                name: element['name'],
+                description: element["description"],
               ),
             );
           });
         }
       });
-      // Firestore.instance.collection("channels").doc(document[''])
     });
   }
 
