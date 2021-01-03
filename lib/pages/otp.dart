@@ -198,16 +198,13 @@ void onClick(){
   documentReference.get()
       .then((snapshot) => {
     if (snapshot.exists) {
-      print("======== Exists ! ========")
+      Get.offAndToNamed("/homePage")
     } else {
-      documentReference.set({
-        "uid":uid,
-        "name":"Enter Your Name",
-        "pNo":"Number",
-        "rNo":"Roll Number",
-        "bio":"Enter your bio"
-      })
+     remove()
     }
   });
-  Get.offAndToNamed("/homePage");
+}
+void remove(){
+  FirebaseAuth auth=FirebaseAuth.instance;
+  auth.signOut();
 }
