@@ -5,15 +5,32 @@ import 'package:flutter/material.dart';
 import 'package:notification/database/moor_database.dart';
 import 'package:notification/widgets/post.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
 
+class _HomeScreenState extends State<HomeScreen> {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
-  // final fcm=FirebaseMessaging();
+  Future public;
+
+  @override
+  void initState() {
+    super.initState();
+    public = _getPublicSnapshots();
+  }
+
+  _getPublicSnapshots() async {
+    QuerySnapshot qn =
+    await _firebaseFirestore.collection("public").getDocuments();
+    return qn.documents;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: StreamBuilder<QuerySnapshot>(
-          stream: _firebaseFirestore.collection("public").snapshots(),
+      child: FutureBuilder(
+          future: public,
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return Center(
@@ -22,7 +39,12 @@ class HomeScreen extends StatelessWidget {
                 ),
               );
             }
-            final taskListFromFirebase = snapshot.data.docs;
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: Text("Loading..."),
+              );
+            }
+            final taskListFromFirebase = snapshot.data;
             List<PostWidget> dataList = [];
             for (var tasksData in taskListFromFirebase) {
               var taskDetails = tasksData.data();
@@ -35,7 +57,7 @@ class HomeScreen extends StatelessWidget {
                       date: taskDetails["date"],
                       imageUrl: taskDetails["imageUrl"],
                       textBody: taskDetails["textBody"],
-                      fileCount:  taskDetails["fileCount"],
+                      fileCount: taskDetails["fileCount"],
                       channelId: taskDetails["id"]),
                   files: taskDetails["files"],
                 ),
