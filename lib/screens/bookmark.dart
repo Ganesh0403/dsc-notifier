@@ -3,6 +3,7 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:notification/widgets/post.dart';
 import 'package:provider/provider.dart';
+//TODO widget build error fixing.
 
 class BookMarkScreen extends StatelessWidget {
   var box=Hive.box('myBox');

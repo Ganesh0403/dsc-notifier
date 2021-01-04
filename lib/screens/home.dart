@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:notification/models/Circular.dart';
+import 'package:notification/database/circular.dart';
+import 'package:notification/providers/user.dart';
 import 'package:notification/widgets/post.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -20,8 +22,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _getPublicSnapshots() async {
+    // final _user=Provider.of<UserProvider>(context).user;
+    List channels=['public'];
+    // List subs=_user['subscriptions'];
+    // subs.forEach((element) {
+    //   channels.add(element);
+    // });
     QuerySnapshot qn =
-    await _firebaseFirestore.collection("public").getDocuments();
+    await _firebaseFirestore.collection("public").where('channels',arrayContainsAny: channels).getDocuments();
     return qn.documents;
   }
 

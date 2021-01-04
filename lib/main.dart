@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:notification/configuration/local.dart';
-import 'package:notification/models/Circular.dart';
+import 'package:notification/database/circular.dart';
 import 'package:notification/pages/home.dart';
 import 'package:notification/pages/login.dart';
 import 'package:notification/pages/otp.dart';

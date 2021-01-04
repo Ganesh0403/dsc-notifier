@@ -203,6 +203,8 @@ void onClick(BuildContext context){
     if (snapshot.exists) {
       List postList=[];
       var box=Hive.box('myBox');
+      print(snapshot.data());
+      box.put('userData', snapshot.data());
       box.put('postList', postList);
       Get.offAndToNamed("/homePage");
     } else {

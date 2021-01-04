@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
 
-part 'Circular.g.dart';
+part 'circular.g.dart';
 
 @HiveType(typeId: 1)
 class Circular {
@@ -29,14 +29,14 @@ class Circular {
 
   Circular(
       {this.title,
-      this.content,
-      this.imgUrl,
-      this.author,
-      this.id,
-      this.files,
-      this.channels,
-      this.dept,
-      this.year,
-      this.division,
-      this.date});
+        this.content,
+        this.imgUrl,
+        this.author,
+        this.id,
+        this.files,
+        this.channels,
+        this.dept,
+        this.year,
+        this.division,
+        this.date});
 }

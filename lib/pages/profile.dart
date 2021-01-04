@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive/hive.dart';
 import 'package:notification/main.dart';
 import 'package:notification/providers/user.dart';
 import 'package:notification/widgets/channel.dart';
@@ -31,12 +32,10 @@ class _ProfilePageState extends State<ProfilePage> {
     user = await FirebaseAuth.instance.currentUser;
     uid = user.uid;
     final _userProvider = Provider.of<UserProvider>(context, listen: false);
+    var box=Hive.box('myBox');
+    var userData=box.get('userData');
     if(_userProvider.user["uid"]==""){
-      DocumentReference documentReference =
-      FirebaseFirestore.instance.collection('users').document(FirebaseAuth.instance.currentUser.uid);
-      documentReference
-          .get()
-          .then((snapshot) => {_userProvider.setUser(snapshot.data())});
+      _userProvider.setUser(userData);
     }
     list();
   }

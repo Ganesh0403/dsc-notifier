@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'Circular.dart';
+part of 'circular.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
