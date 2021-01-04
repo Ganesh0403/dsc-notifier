@@ -23,23 +23,8 @@ class PostPage extends StatefulWidget {
 
 class _PostPageState extends State<PostPage> {
 
-  bool isPresent=false;
-  String index;
-  final fcm=FirebaseMessaging();
   @override
   void initState() {
-    print("check check");
-    fcm.configure(
-      onLaunch: (Map<String,dynamic> message) async {
-        print("onLaunch: $message");
-      },
-      onResume: (Map<String,dynamic> message) async {
-        print("onResume: $message");
-      },
-      onMessage: (Map<String,dynamic> message) async {
-        print("onMessage: $message");
-      },
-    );
     super.initState();
   }
   @override

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -25,6 +26,8 @@ class HomePage extends StatelessWidget {
     AboutUsScreen(),
   ];
 
+  final fcm=FirebaseMessaging();
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -45,6 +48,20 @@ class HomePage extends StatelessWidget {
     var userData=box.get('userData');
     if(_userProvider.user["uid"]==""){
       _userProvider.setUser(userData);
+      fcm.configure(
+        onLaunch: (Map<String,dynamic> message) async {
+          print("onLaunch: $message");
+        },
+        onResume: (Map<String,dynamic> message) async {
+          print("onResume: $message");
+        },
+        onMessage: (Map<String,dynamic> message) async {
+          print("onMessage: $message");
+        },
+      );
+      _userProvider.user["subscriptions"].forEach((element){
+        fcm.subscribeToTopic(element.replaceAll(" ","_"));
+      });
     }
     return AppBar(
       automaticallyImplyLeading: false,

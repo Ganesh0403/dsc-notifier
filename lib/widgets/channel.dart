@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:notification/global%20functions/updateUser.dart';
 import 'package:notification/providers/user.dart';
@@ -93,6 +94,7 @@ class _ChannelWidgetState extends State<ChannelWidget> {
                         Text(
                           widget.name,
                           style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                          overflow: TextOverflow.ellipsis,
                         ),
                         Text(
                           widget.description,
@@ -112,12 +114,15 @@ class _ChannelWidgetState extends State<ChannelWidget> {
                         textColor: Colors.white,
                         onPressed: () {
                           if(!widget.private){
+                            final fcm=FirebaseMessaging();
                             setState(() {
                               if(!user["subscriptions"].contains(widget.name)){
                                 user["subscriptions"].add(widget.name);
+                                fcm.subscribeToTopic(widget.name.replaceAll(" ","_"));
                               }
                               else{
                                 user["subscriptions"].remove(widget.name);
+                                fcm.unsubscribeFromTopic(widget.name.replaceAll(" ","_"));
                               }
                               updateUser(user);
                             });
