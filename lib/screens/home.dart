@@ -48,6 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
             var box=Hive.box('myBox');
             for (var tasksData in taskListFromFirebase) {
               var taskDetails = tasksData.data();
+              print(box.get(taskDetails['id'].toString().trim()));
               dataList.add(
                 PostWidget(
                   circular: new Circular(
@@ -63,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       division: taskDetails['division'],
                       date:DateTime.fromMicrosecondsSinceEpoch(taskDetails['date'].microsecondsSinceEpoch),
                   ),
-                  dataFromDatabase: box.get(taskDetails['id'])??false,
+                  dataFromDatabase: box.get(taskDetails['id'].toString().trim())??false,
                   // files: ,
                 ),
               );

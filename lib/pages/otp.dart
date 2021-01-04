@@ -205,12 +205,6 @@ void onClick(BuildContext context){
       var box=Hive.box('myBox');
       box.put('postList', postList);
       Get.offAndToNamed("/homePage");
-      final _userProvider = Provider.of<UserProvider>(context, listen: false);
-      DocumentReference documentReference =
-      FirebaseFirestore.instance.collection('users').document(uid);
-      documentReference
-          .get()
-          .then((snapshot) => {_userProvider.setUser(snapshot.data())});
     } else {
      remove();
     }

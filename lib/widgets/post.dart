@@ -109,14 +109,15 @@ class _PostWidgetState extends State<PostWidget> {
                 IconButton(color: Colors.black.withOpacity(0.75), padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10), constraints: BoxConstraints(),icon: Icon((widget.dataFromDatabase?Icons.delete:Icons.bookmark_border)), onPressed: (){
                   var box=Hive.box('myBox');
                   List postList=box.get('postList');
-                  if(!widget.dataFromDatabase){
-                    box.delete(widget.circular.id);
-                    postList.add(widget.circular);
+                  if(widget.dataFromDatabase){
+                    box.delete(widget.circular.id.trim());
+                    print(widget.circular.id.trim());
+                    postList.remove(widget.circular);
                   }
                   else{
-                    print(widget.circular.id);
-                    box.put(widget.circular.id, true);
-                    postList.remove(widget.circular);
+                    print(widget.circular.id.trim());
+                    box.put(widget.circular.id.trim(), true);
+                    postList.add(widget.circular);
                   }
                   box.put('postList', postList);
                   setState(() {
