@@ -22,14 +22,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _getPublicSnapshots() async {
-    // final _user=Provider.of<UserProvider>(context).user;
-    List channels=['public'];
-    // List subs=_user['subscriptions'];
-    // subs.forEach((element) {
-    //   channels.add(element);
-    // });
     QuerySnapshot qn =
-    await _firebaseFirestore.collection("public").where('channels',arrayContainsAny: channels).getDocuments();
+    await _firebaseFirestore.collection("public").getDocuments();
     return qn.documents;
   }
 

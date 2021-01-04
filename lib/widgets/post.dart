@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:notification/database/circular.dart';
 import 'package:notification/pages/postPage.dart';
-import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PostWidget extends StatefulWidget {
@@ -49,7 +47,6 @@ class _PostWidgetState extends State<PostWidget> {
             _buildTextBody(context),
             SizedBox(height: 12,),
             _buildLinkBody(context),
-            _buildFooter(context),
           ],
         ),
       ),
@@ -201,16 +198,4 @@ class _PostWidgetState extends State<PostWidget> {
     );
   }
 
-  Widget _buildFooter(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      child: Text(
-          (widget.circular.files!=null)?widget.circular.files.length.toString():"0",
-          style: GoogleFonts.rajdhani(textStyle: TextStyle(
-              color: Colors.black54,
-              fontSize: 12
-          ),)
-      ),
-    );
-  }
 }

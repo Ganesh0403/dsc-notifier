@@ -13,9 +13,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 class PostPage extends StatefulWidget {
   final Circular circular;
-  final List files;
 
-  const PostPage({Key key, this.circular, this.files}) : super(key: key);
+  const PostPage({Key key, this.circular}) : super(key: key);
 
   // PostWidget({this.dataFromDatabase=false, this.circular});
   @override
@@ -29,7 +28,6 @@ class _PostPageState extends State<PostPage> {
   final fcm=FirebaseMessaging();
   @override
   void initState() {
-    // list("");
     print("check check");
     fcm.configure(
       onLaunch: (Map<String,dynamic> message) async {
@@ -65,36 +63,22 @@ class _PostPageState extends State<PostPage> {
                 _buildTextBody(context),
                 SizedBox(height: 12,),
                 _buildLinkBody(context),
-                _buildFooter(context),
                 SizedBox(height: 12,),
-                //TODO the channel list.
-                // buttonBuilder(),
+                buttonBuilder(),
               ]
           ),
         ),
       ),
     );
   }
-  // Future<void> list(String channel) async {
-  //   CollectionReference ref = Firestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).collection("channels");
-  //   QuerySnapshot eventsQuery = await ref
-  //       .getDocuments();
-  //   if(channel!=""){
-  //     await Firestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).collection("channels").document(index).delete();
-  //     return;
-  //   }
-  //
-  //
-  //   eventsQuery.documents.forEach((document) {
-  //     if(document["id"].toString().trim()==widget.circular.channelId.trim()){
-  //       index=document.documentID;
-  //       setState(() {
-  //         isPresent=true;
-  //       });
-  //       return;
-  //     }
-  //   });
-  // }
+  Widget buttonBuilder(){
+    String channels="";
+    widget.circular.channels.forEach((element) {
+      channels+=(element+" ");
+    });
+    return Text(channels);
+  }
+
   Widget _buildHeader(BuildContext context) {
     return Container(
       child: Row(
@@ -220,19 +204,6 @@ class _PostPageState extends State<PostPage> {
             color: Colors.blue,
           ),
         )
-    );
-  }
-
-  Widget _buildFooter(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      child: Text(
-          (widget.circular.files!=null)?widget.circular.files.length.toString():"0",
-          style: GoogleFonts.rajdhani(textStyle: TextStyle(
-              color: Colors.black54,
-              fontSize: 12
-          ),)
-      ),
     );
   }
 }

@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
-
+import 'package:notification/global%20functions/updateUser.dart';
+import 'package:notification/providers/user.dart';
+import 'package:provider/provider.dart';
+//TODO add firebase crash analytics
 class ChannelWidget extends StatefulWidget {
-  final String uid;
+  final bool private;
+  final bool developer;
   final String name;
   final String description;
   final String img;
 
   ChannelWidget({
     this.img,
-    @required this.uid,
     @required this.name,
     @required this.description,
+    this.private=false,
+    this.developer=false,
   });
 
   @override
@@ -20,12 +25,12 @@ class ChannelWidget extends StatefulWidget {
 class _ChannelWidgetState extends State<ChannelWidget> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    var user=Provider.of<UserProvider>(context).user;
     return Container(
       decoration: BoxDecoration(
           color: Colors.white,
@@ -78,20 +83,49 @@ class _ChannelWidgetState extends State<ChannelWidget> {
               width: double.infinity,
               height: MediaQuery.of(context).size.height / 10,
               margin: EdgeInsets.only(left: 10),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    widget.name,
-                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          widget.name,
+                          style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                        ),
+                        Text(
+                          widget.description,
+                          style: TextStyle(
+                              color: Colors.black.withOpacity(0.5), fontSize: 13),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
                   ),
-                  Text(
-                    widget.description,
-                    style: TextStyle(
-                        color: Colors.black.withOpacity(0.5), fontSize: 13),
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  (widget.developer==false)?Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      FlatButton(
+                        child: (!user["subscriptions"].contains(widget.name))?Text('Subscribe'):Text('Unsubscribe'),
+                        color: Colors.blueAccent,
+                        textColor: Colors.white,
+                        onPressed: () {
+                          if(!widget.private){
+                            setState(() {
+                              if(!user["subscriptions"].contains(widget.name)){
+                                user["subscriptions"].add(widget.name);
+                              }
+                              else{
+                                user["subscriptions"].remove(widget.name);
+                              }
+                              updateUser(user);
+                            });
+                          }
+                        },
+                      )
+                    ],
+                  ):Container(),
                 ],
               ),
             ),

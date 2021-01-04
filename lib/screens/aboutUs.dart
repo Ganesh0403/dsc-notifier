@@ -39,7 +39,8 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
             dataList.add(
                 ChannelWidget(
                   img: value.avatarUrl.toString(),
-                  uid: "okok",
+                  // uid: "okok",
+                  developer: true,
                   name: value.login.toString(),
                   description: value.bio.toString(),
                 )

@@ -1,13 +1,10 @@
-import 'dart:collection';
-// import 'dart:html';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
+import 'package:notification/global%20functions/updateUser.dart';
 import 'package:notification/main.dart';
 import 'package:notification/providers/user.dart';
 import 'package:notification/widgets/channel.dart';
@@ -26,7 +23,6 @@ class _ProfilePageState extends State<ProfilePage> {
   bool bio=false;
   Map<String, dynamic> _user;
   TextEditingController ubio;
-  final _firebaseFirestore=FirebaseFirestore.instance;
   getData(BuildContext context) async {
     print("Function called automatically !");
     user = await FirebaseAuth.instance.currentUser;
@@ -83,9 +79,7 @@ class _ProfilePageState extends State<ProfilePage> {
               color: Colors.white,
             ),
             onPressed: () {
-              _firebaseFirestore.collection("users").doc(uid).set(_user).whenComplete(() {
-                Fluttertoast.showToast(msg: "Successfully updated your data");
-              });
+              updateUser(_user);
             },
           ),
         )
@@ -321,15 +315,14 @@ class _ProfilePageState extends State<ProfilePage> {
 
     channels.forEach((document) {
       querySnapshot.documents.forEach((element) {
-        if(element.id.toString().trim()==document['id'].toString().trim()){
-          // print("ok");
+        if(element['name'].toString().trim()==document.toString().trim()){
           setState(() {
             dataList.add(
               ChannelWidget(
                 img: element['img'],
-                uid: element.id,
                 name: element['name'],
                 description: element["description"],
+                private: element["mode"],
               ),
             );
           });
