@@ -31,11 +31,13 @@ class _ProfilePageState extends State<ProfilePage> {
     user = await FirebaseAuth.instance.currentUser;
     uid = user.uid;
     final _userProvider = Provider.of<UserProvider>(context, listen: false);
-    DocumentReference documentReference =
-        FirebaseFirestore.instance.collection('users').document(uid);
-    documentReference
-        .get()
-        .then((snapshot) => {_userProvider.setUser(snapshot.data())});
+    if(_userProvider.user["uid"]==""){
+      DocumentReference documentReference =
+      FirebaseFirestore.instance.collection('users').document(FirebaseAuth.instance.currentUser.uid);
+      documentReference
+          .get()
+          .then((snapshot) => {_userProvider.setUser(snapshot.data())});
+    }
     list();
   }
 

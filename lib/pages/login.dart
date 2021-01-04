@@ -48,7 +48,7 @@ class _LoginPageState extends State<LoginPage> {
     final PhoneVerificationCompleted verifiedSuccess = (PhoneAuthCredential auth) async {
       print("Success !");
       print(auth.toString());
-      await firebaseAuth.signInWithCredential(auth).then((value) => onClick());
+      await firebaseAuth.signInWithCredential(auth).then((value) => onClick(context));
       // onClick(auth);
       // await auth.si
     };

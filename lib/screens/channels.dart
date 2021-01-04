@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:notification/database/moor_database.dart';
+import 'package:notification/models/Circular.dart';
 import 'package:notification/widgets/channel.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:notification/widgets/post.dart';
@@ -19,33 +19,24 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
     super.initState();
   }
   Future<void> list() async {
-    // if(dataList.length!=0)return;
-    CollectionReference ref = Firestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).collection('channels');
     CollectionReference reference=Firestore.instance.collection('channels');
     QuerySnapshot querySnapshot=await reference.getDocuments();
-    QuerySnapshot eventsQuery = await ref
-        .getDocuments();
 
-    eventsQuery.documents.forEach((document) {
-      querySnapshot.documents.forEach((element) {
-        if(element.id.toString().trim()==document['id'].toString().trim()){
-          // print("ok");
-          setState(() {
-            dataList.add(
-              GestureDetector(
-                onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>ChannelScreen(docId: element.id,)));
-                },
-                child: ChannelWidget(
-                  img: element['img'],
-                  uid: element.id,
-                  name: element['name'],
-                  description: element["description"],
-                ),
-              ),
-            );
-          });
-        }
+    querySnapshot.documents.forEach((element) {
+      setState(() {
+        dataList.add(
+          GestureDetector(
+            onTap: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>ChannelScreen(docId: element.id,)));
+            },
+            child: ChannelWidget(
+              img: element['img'],
+              uid: element.id,
+              name: element['name'],
+              description: element["description"],
+            ),
+          ),
+        );
       });
     });
   }
@@ -95,14 +86,19 @@ class ChannelScreen extends StatelessWidget {
                 dataList.add(
                   PostWidget(
                     circular: new Circular(
-                        avatarUrl: taskDetails["avatarUrl"],
-                        channelName: taskDetails["channelName"],
-                        authorName: taskDetails["authorName"],
-                        date: taskDetails["date"],
-                        imageUrl: taskDetails["imageUrl"],
-                        textBody: taskDetails["textBody"],
-                        fileCount:  taskDetails["fileCount"],
-                        channelId: taskDetails["id"]),
+                      title: taskDetails['title'],
+                      content: taskDetails['content'],
+                      imgUrl: taskDetails['imgUrl'],
+                      author: taskDetails['author'],
+                      id: taskDetails['id'],
+                      files: taskDetails['files'],
+                      channels: taskDetails['channels'],
+                      dept: taskDetails['dept'],
+                      year: taskDetails['year'],
+                      division: taskDetails['division'],
+                      date: taskDetails['date'],
+                    ),
+                    // dataFromDatabase: ,
                   ),
                 );
               }

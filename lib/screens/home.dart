@@ -1,8 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:notification/database/moor_database.dart';
+import 'package:hive/hive.dart';
+import 'package:notification/models/Circular.dart';
 import 'package:notification/widgets/post.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -46,20 +45,26 @@ class _HomeScreenState extends State<HomeScreen> {
             }
             final taskListFromFirebase = snapshot.data;
             List<PostWidget> dataList = [];
+            var box=Hive.box('myBox');
             for (var tasksData in taskListFromFirebase) {
               var taskDetails = tasksData.data();
               dataList.add(
                 PostWidget(
                   circular: new Circular(
-                      avatarUrl: taskDetails["avatarUrl"],
-                      channelName: taskDetails["channelName"],
-                      authorName: taskDetails["authorName"],
-                      date: taskDetails["date"],
-                      imageUrl: taskDetails["imageUrl"],
-                      textBody: taskDetails["textBody"],
-                      fileCount: taskDetails["fileCount"],
-                      channelId: taskDetails["id"]),
-                  files: taskDetails["files"],
+                      title: taskDetails['title'],
+                      content: taskDetails['content'],
+                      imgUrl: taskDetails['imgUrl'],
+                      author: taskDetails['author'],
+                      id: taskDetails['id'],
+                      files: taskDetails['files'],
+                      channels: taskDetails['channels'],
+                      dept: taskDetails['dept'],
+                      year: taskDetails['year'],
+                      division: taskDetails['division'],
+                      date:DateTime.fromMicrosecondsSinceEpoch(taskDetails['date'].microsecondsSinceEpoch),
+                  ),
+                  dataFromDatabase: box.get(taskDetails['id'])??false,
+                  // files: ,
                 ),
               );
             }

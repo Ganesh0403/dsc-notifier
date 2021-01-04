@@ -1,14 +1,17 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:notification/controllers/index.dart';
 import 'package:notification/pages/profile.dart';
+import 'package:notification/providers/user.dart';
 import 'package:notification/screens/aboutUs.dart';
 import 'package:notification/screens/bookmark.dart';
 import 'package:notification/screens/channels.dart';
 import 'package:notification/screens/home.dart';
 import 'package:notification/screens/channels.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
   // final userSnapshot;
@@ -36,6 +39,14 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _buildAppbar(BuildContext context) {
+    final _userProvider = Provider.of<UserProvider>(context, listen: false);
+    if(_userProvider.user["uid"]==""){
+      DocumentReference documentReference =
+      FirebaseFirestore.instance.collection('users').document(FirebaseAuth.instance.currentUser.uid);
+      documentReference
+          .get()
+          .then((snapshot) => {_userProvider.setUser(snapshot.data())});
+    }
     return AppBar(
       automaticallyImplyLeading: false,
       backgroundColor: Colors.white,

@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:notification/database/moor_database.dart';
 import 'package:notification/widgets/post.dart';
 import 'package:provider/provider.dart';
 
 class BookMarkScreen extends StatelessWidget {
+  var box=Hive.box('myBox');
   @override
   Widget build(BuildContext context) {
-    final database=Provider.of<AppDatabase>(context);
     return Container(
       child: StreamBuilder(
-          stream: database.watchAllCirculars(),
+          stream: box.watch(key: 'postList'),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return Center(
@@ -21,13 +20,10 @@ class BookMarkScreen extends StatelessWidget {
             }
             final taskListFromFirebase = snapshot.data??List();
             List<PostWidget> dataList = [];
-            var box=Hive.box('myBox');
             for (var tasksData in taskListFromFirebase) {
               dataList.add(
                 PostWidget(
-                  files: box.get(tasksData.id),
                   circular: tasksData,
-                  dataFromDatabase: true,
                 ),
               );
             }

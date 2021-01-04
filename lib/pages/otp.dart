@@ -2,7 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
+import 'package:notification/providers/user.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:provider/provider.dart';
 
 
 class OtpPage extends StatefulWidget {
@@ -140,7 +143,7 @@ class _OtpPageState extends State<OtpPage> {
           print("Credential ==> $_credential");
           auth.signInWithCredential(_credential)
               .then((value) {
-                onClick();
+                onClick(context);
           })
               .catchError((error){print("Error");});
 
@@ -190,17 +193,26 @@ class _OtpPageState extends State<OtpPage> {
   }
 
 }
-void onClick(){
+void onClick(BuildContext context){
   print("Successfully verified");
   final user = FirebaseAuth.instance.currentUser;
   String uid = user.uid;
   DocumentReference documentReference = FirebaseFirestore.instance.collection('users').document(uid);
   documentReference.get()
-      .then((snapshot) => {
+      .then((snapshot)  {
     if (snapshot.exists) {
-      Get.offAndToNamed("/homePage")
+      List postList=[];
+      var box=Hive.box('myBox');
+      box.put('postList', postList);
+      Get.offAndToNamed("/homePage");
+      final _userProvider = Provider.of<UserProvider>(context, listen: false);
+      DocumentReference documentReference =
+      FirebaseFirestore.instance.collection('users').document(uid);
+      documentReference
+          .get()
+          .then((snapshot) => {_userProvider.setUser(snapshot.data())});
     } else {
-     remove()
+     remove();
     }
   });
 }
