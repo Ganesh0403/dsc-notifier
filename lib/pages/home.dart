@@ -27,6 +27,7 @@ class HomePage extends StatelessWidget {
   ];
 
   final fcm=FirebaseMessaging();
+  Map user={};
 
   @override
   Widget build(BuildContext context) {
@@ -43,24 +44,27 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _buildAppbar(BuildContext context) {
-    final _userProvider = Provider.of<UserProvider>(context, listen: false);
-    var box=Hive.box('myBox');
-    var userData=box.get('userData');
-    if(_userProvider.user["uid"]==""){
-      _userProvider.setUser(userData);
-      fcm.configure(
-        onLaunch: (Map<String,dynamic> message) async {
-          print("onLaunch: $message");
-        },
-        onResume: (Map<String,dynamic> message) async {
-          print("onResume: $message");
-        },
-        onMessage: (Map<String,dynamic> message) async {
-          print("onMessage: $message");
-        },
-      );
-      _userProvider.user["subscriptions"].forEach((element){
-        fcm.subscribeToTopic(element.replaceAll(" ","_"));
+    if(user["uid"]==null || user["uid"]==''){
+      Future.delayed(const Duration(milliseconds: 100),(){
+        final _userProvider = Provider.of<UserProvider>(context, listen: false);
+        var box=Hive.box('myBox');
+        var userData=box.get('userData');
+        _userProvider.setUser(userData);
+        user=_userProvider.user;
+        fcm.configure(
+          onLaunch: (Map<String,dynamic> message) async {
+            print("onLaunch: $message");
+          },
+          onResume: (Map<String,dynamic> message) async {
+            print("onResume: $message");
+          },
+          onMessage: (Map<String,dynamic> message) async {
+            print("onMessage: $message");
+          },
+        );
+        _userProvider.user["subscriptions"].forEach((element){
+          fcm.subscribeToTopic(element.replaceAll(" ","_"));
+        });
       });
     }
     return AppBar(
