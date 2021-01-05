@@ -154,20 +154,25 @@ class _PostWidgetState extends State<PostWidget> {
               return SizedBox(height: 12,);
             },
             itemBuilder:(BuildContext context,int index){
-              return Linkify(
-                onOpen: (link) async {
-                  if (await canLaunch(link.url)) {
-                    await launch(link.url);
-                  } else {
-                    throw "Could not launch $link";
-                  }
+              return GestureDetector(
+                onTap: (){
+                  launch(widget.circular.files[index]);
                 },
-                text: "File${index+1}:${widget.circular.files[index]}",
-                style: GoogleFonts.roboto(textStyle: TextStyle(fontSize: 14,height: 1.25)),
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.justify,
-                linkStyle: TextStyle(
-                  color: Colors.blue,
+                child: Linkify(
+                  onOpen: (link) async {
+                    if (await canLaunch(link.url)) {
+                      await launch(link.url);
+                    } else {
+                      throw "Could not launch $link";
+                    }
+                  },
+                  text: "File ${index+1} contents",
+                  style: GoogleFonts.roboto(textStyle: TextStyle(fontSize: 14,height: 1.25)),
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.justify,
+                  linkStyle: TextStyle(
+                    color: Colors.blue,
+                  ),
                 ),
               );
             }),

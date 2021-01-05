@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -15,6 +16,7 @@ import 'package:notification/pages/otp.dart';
 import 'package:notification/pages/profile.dart';
 import 'package:notification/pages/splash.dart';
 import 'package:notification/providers/user.dart';
+import 'package:notification/screens/error_page.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:provider/provider.dart';
 
@@ -33,12 +35,21 @@ void main() async {
   Hive.registerAdapter(CircularAdapter());
   await Hive.openBox('myBox');
   FlutterError.onError=FirebaseCrashlytics.instance.recordFlutterError;
+  DocumentReference documentReference = FirebaseFirestore.instance.collection('control').doc('maintenance');
+  var check=await documentReference.get();
   runZoned(() {
-    runApp(App());
+    runApp(App(maintenance: check.data()['maintenance'],));
   }, onError: FirebaseCrashlytics.instance.recordError);
 }
 
+// Future<bool> maintenance()async{
+// return true;
+// }
+
 class App extends StatelessWidget {
+  final bool maintenance;
+
+  const App({Key key, this.maintenance}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
@@ -66,7 +77,7 @@ class App extends StatelessWidget {
             visualDensity: VisualDensity.adaptivePlatformDensity,
             scaffoldBackgroundColor: Colors.white,
           ),
-          home: StreamBuilder(
+          home: maintenance?ErrorScreen():StreamBuilder(
             // ignore: deprecated_member_use
             stream: FirebaseAuth.instance.onAuthStateChanged,
             builder: (ctx, userSnapshot) {

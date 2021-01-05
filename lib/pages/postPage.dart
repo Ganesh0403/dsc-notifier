@@ -1,14 +1,8 @@
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:notification/database/circular.dart';
-import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PostPage extends StatefulWidget {
@@ -148,20 +142,25 @@ class _PostPageState extends State<PostPage> {
               return SizedBox(height: 12,);
             },
             itemBuilder:(BuildContext context,int index){
-              return Linkify(
-                onOpen: (link) async {
-                  if (await canLaunch(link.url)) {
-                    await launch(link.url);
-                  } else {
-                    throw "Could not launch $link";
-                  }
+              return GestureDetector(
+                onTap: (){
+                  launch(widget.circular.files[index]);
                 },
-                text: "File${index+1}:${widget.circular.files[index]}",
-                style: GoogleFonts.roboto(textStyle: TextStyle(fontSize: 14,height: 1.25)),
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.justify,
-                linkStyle: TextStyle(
-                  color: Colors.blue,
+                child: Linkify(
+                  onOpen: (link) async {
+                    if (await canLaunch(link.url)) {
+                      await launch(link.url);
+                    } else {
+                      throw "Could not launch $link";
+                    }
+                  },
+                  text: "File ${index+1} contents",
+                  style: GoogleFonts.roboto(textStyle: TextStyle(fontSize: 14,height: 1.25)),
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.justify,
+                  linkStyle: TextStyle(
+                    color: Colors.blue,
+                  ),
                 ),
               );
             }),
