@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:notification/global%20functions/updateUser.dart';
 import 'package:notification/providers/user.dart';
 import 'package:provider/provider.dart';
-//TODO add firebase crash analytics
+
 class ChannelWidget extends StatefulWidget {
   final bool private;
   final bool developer;

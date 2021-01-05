@@ -1,7 +1,8 @@
-import 'dart:io';
+import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -31,7 +32,10 @@ void main() async {
   Hive.init(appDir.path);
   Hive.registerAdapter(CircularAdapter());
   await Hive.openBox('myBox');
-  runApp(App());
+  FlutterError.onError=FirebaseCrashlytics.instance.recordFlutterError;
+  runZoned(() {
+    runApp(App());
+  }, onError: FirebaseCrashlytics.instance.recordError);
 }
 
 class App extends StatelessWidget {
