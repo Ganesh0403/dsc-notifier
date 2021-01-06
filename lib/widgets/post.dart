@@ -158,21 +158,28 @@ class _PostWidgetState extends State<PostWidget> {
                 onTap: (){
                   launch(widget.circular.files[index]);
                 },
-                child: Linkify(
-                  onOpen: (link) async {
-                    if (await canLaunch(link.url)) {
-                      await launch(link.url);
-                    } else {
-                      throw "Could not launch $link";
-                    }
-                  },
-                  text: "File ${index+1} contents",
-                  style: GoogleFonts.roboto(textStyle: TextStyle(fontSize: 14,height: 1.25)),
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.justify,
-                  linkStyle: TextStyle(
-                    color: Colors.blue,
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Linkify(
+                      onOpen: (link) async {
+                        if (await canLaunch(link.url)) {
+                          await launch(link.url);
+                        } else {
+                          throw "Could not launch $link";
+                        }
+                      },
+                      text: "File ${index+1} contents",
+                      style: GoogleFonts.roboto(textStyle: TextStyle(fontSize: 14,height: 1.25)),
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.justify,
+                      linkStyle: TextStyle(
+                        color: Colors.blue,
+                      ),
+                    ),
+                    Icon(Icons.download_outlined,color: Colors.lightBlueAccent,),
+                  ],
                 ),
               );
             }),
