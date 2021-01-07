@@ -323,6 +323,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 name: element['name'],
                 description: element["description"],
                 private: element["mode"],
+                developer: true,
               ),
             );
           });

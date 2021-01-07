@@ -109,7 +109,7 @@ class _PostWidgetState extends State<PostWidget> {
                   if(widget.dataFromDatabase){
                     box.delete(widget.circular.id.trim());
                     print(widget.circular.id.trim());
-                    postList.remove(widget.circular);
+                    postList.removeWhere((element) => element.id.toString().trim()==widget.circular.id.trim());
                   }
                   else{
                     print(widget.circular.id.trim());
