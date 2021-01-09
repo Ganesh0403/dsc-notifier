@@ -22,8 +22,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _getPublicSnapshots() async {
+    var box=Hive.box('myBox');
+    List channels=box.get('userData')["subscriptions"];
+    channels.add("public");
     QuerySnapshot qn =
-    await _firebaseFirestore.collection("public").getDocuments();
+    await _firebaseFirestore.collection("public").where("channels",arrayContainsAny: channels).getDocuments();
     return qn.documents;
   }
 

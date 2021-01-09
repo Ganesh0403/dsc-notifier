@@ -110,7 +110,7 @@ class _ChannelWidgetState extends State<ChannelWidget> {
                     children: [
                       FlatButton(
                         child: (!user["subscriptions"].contains(widget.name))?Text('Subscribe'):Text('Unsubscribe'),
-                        color: Colors.blueAccent,
+                        color: widget.private?Colors.grey[800]:Colors.red[800],
                         textColor: Colors.white,
                         onPressed: () {
                           if(!widget.private){

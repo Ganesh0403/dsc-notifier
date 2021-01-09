@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:notification/pages/channelScreen.dart';
 import 'package:notification/widgets/channel.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -25,11 +26,11 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
         dataList.add(
           GestureDetector(
             onTap: (){
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>ChannelScreen(docId: element['name'],channelDescription: element["description"],)));
+              if(element['mode']==false)Navigator.push(context, MaterialPageRoute(builder: (context)=>ChannelScreen(docId: element['name'],channelDescription: element["description"],)));
+              else Fluttertoast.showToast(msg: "Access Denied.");
             },
             child: ChannelWidget(
               img: element['img'],
-              // uid: element.id,
               name: element['name'],
               description: element["description"],
               private: element["mode"],
