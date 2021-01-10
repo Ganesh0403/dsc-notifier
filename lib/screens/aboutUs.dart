@@ -32,6 +32,12 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
     }
   }
   developers(){
+    dataList.add(Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Container(
+        child: Image(image: AssetImage('assets/images/DSC_Pimpri_Chinchwad_College_Of_Engineering_Light_Vertical-Logo.png')),
+      ),
+    ));
     list.forEach((element) {
       fetchDeveloper(element).then((value){
         if(value!=null){
