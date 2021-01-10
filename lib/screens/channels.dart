@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:hive/hive.dart';
 import 'package:notification/pages/channelScreen.dart';
 import 'package:notification/widgets/channel.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -21,12 +22,14 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
     CollectionReference reference=Firestore.instance.collection('channels');
     QuerySnapshot querySnapshot=await reference.getDocuments();
 
+    var box=Hive.box('myBox');
+    List sub=box.get('userData')["subscriptions"];
     querySnapshot.documents.forEach((element) {
       setState(() {
         dataList.add(
           GestureDetector(
             onTap: (){
-              if(element['mode']==false)Navigator.push(context, MaterialPageRoute(builder: (context)=>ChannelScreen(docId: element['name'],channelDescription: element["description"],)));
+              if(element['mode']==false || sub.contains(element['name']))Navigator.push(context, MaterialPageRoute(builder: (context)=>ChannelScreen(docId: element['name'],channelDescription: element["description"],)));
               else Fluttertoast.showToast(msg: "Access Denied.");
             },
             child: ChannelWidget(
