@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
@@ -69,7 +70,7 @@ class _PostPageState extends State<PostPage> {
             decoration: BoxDecoration(
                 color: Colors.grey,
                 borderRadius: BorderRadius.circular(11),
-                image: DecorationImage(image: NetworkImage(widget.circular.imgUrl)),
+                image: DecorationImage(image: CachedNetworkImageProvider(widget.circular.imgUrl)),
                 border: Border.all(
                   width: 0.1,
                   color: Colors.black.withOpacity(0.5),
@@ -126,7 +127,12 @@ class _PostPageState extends State<PostPage> {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(13),
-        child: Image.network(widget.circular.imgUrl, fit: BoxFit.fitWidth,),
+        child: CachedNetworkImage(
+          imageUrl: widget.circular.imgUrl,
+          placeholder: (context, url) => CircularProgressIndicator(),
+          errorWidget: (context, url, error) => Icon(Icons.error),
+          fit: BoxFit.fitWidth,
+        ),
       ),
     );
   }

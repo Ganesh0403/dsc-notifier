@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:notification/global%20functions/updateUser.dart';
@@ -70,8 +71,8 @@ class _ChannelWidgetState extends State<ChannelWidget> {
                     color: Colors.white,
                     shape: BoxShape.circle,
                     image: DecorationImage(
-                        image: AssetImage(
-                          'assets/avatars/avatar2.jpg',
+                        image: CachedNetworkImageProvider(
+                          widget.img,
                         ),
                         fit: BoxFit.cover),
                   ),
@@ -146,7 +147,7 @@ class _ChannelWidgetState extends State<ChannelWidget> {
         color: Colors.white,
         shape: BoxShape.circle,
         image: DecorationImage(
-          image: NetworkImage(
+          image: CachedNetworkImageProvider(
             widget.img,
           ),
           fit: BoxFit.cover,
