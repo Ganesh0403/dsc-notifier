@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
+import 'package:notification/global%20functions/internetConnectivity.dart';
 import 'package:notification/global%20functions/updateUser.dart';
 import 'package:notification/main.dart';
+import 'package:notification/pages/NoInternet.dart';
 import 'package:notification/providers/user.dart';
 import 'package:notification/widgets/channel.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +23,7 @@ class _ProfilePageState extends State<ProfilePage> {
   User user;
   List<Widget> dataList = [];
   bool bio=false;
+  bool internet=false;
   Map<String, dynamic> _user;
   TextEditingController ubio;
   getData(BuildContext context) async {
@@ -38,7 +41,21 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   void initState() {
-    getData(context);
+    check().then((value) {
+      if (value != null && value) {
+        // Internet Present Case
+        getData(context);
+        setState(() {
+          internet=true;
+        });
+      }
+      else{
+        setState(() {
+          internet=false;
+        });
+      }
+      // No-Internet Case
+    });
     super.initState();
   }
   @override
@@ -50,7 +67,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(appBar: _buildAppBar(context), body: _buildBody(context)),
+      child: Scaffold(appBar: _buildAppBar(context), body: internet?_buildBody(context):Internet()),
     );
   }
 

@@ -5,7 +5,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
+import 'package:notification/global%20functions/internetConnectivity.dart';
 import 'package:notification/models/developer.dart';
+import 'package:notification/pages/NoInternet.dart';
 import 'package:notification/widgets/channel.dart';
 
 
@@ -17,6 +19,7 @@ class AboutUsScreen extends StatefulWidget {
 class _AboutUsScreenState extends State<AboutUsScreen> {
 
   String uid = 'kGuY7t3VBpZJOOOOVWHwYZzTCUJ3';
+  bool internet=false;
   Map data = {
     "name":"EMPTY"
   };
@@ -90,19 +93,33 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
   }
   @override
   void initState() {
-    developers();
+    check().then((value) {
+      if (value != null && value) {
+        // Internet Present Case
+        developers();
+        setState(() {
+          internet=true;
+        });
+      }
+      else{
+        setState(() {
+          internet=false;
+        });
+      }
+      // No-Internet Case
+    });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return internet?Container(
       padding: EdgeInsets.only(top: 10),
       child: SingleChildScrollView(
         child: Column(
           children: dataList,
         ),
       ),
-    );
+    ):Internet();
   }
 }

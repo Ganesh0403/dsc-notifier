@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive/hive.dart';
+import 'package:notification/global%20functions/internetConnectivity.dart';
+import 'package:notification/pages/NoInternet.dart';
 import 'package:notification/pages/channelScreen.dart';
 import 'package:notification/widgets/channel.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -13,10 +15,25 @@ class ChannelsScreen extends StatefulWidget {
 
 class _ChannelsScreenState extends State<ChannelsScreen> {
   List<Widget> dataList=[];
+  bool internet=false;
   @override
   void initState() {
-    list();
     super.initState();
+    check().then((value) {
+      if (value != null && value) {
+        // Internet Present Case
+        list();
+        setState(() {
+          internet=true;
+        });
+      }
+      else{
+        setState(() {
+          internet=false;
+        });
+      }
+      // No-Internet Case
+    });
   }
   Future<void> list() async {
     CollectionReference reference=Firestore.instance.collection('channels');
@@ -46,14 +63,14 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return internet?Container(
       padding: EdgeInsets.only(top: 10),
       child: SingleChildScrollView(
         child: Column(
           children: dataList,
         ),
       ),
-    );
+    ):Internet();
   }
 }
 

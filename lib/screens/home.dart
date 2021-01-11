@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:notification/database/circular.dart';
+import 'package:notification/global%20functions/internetConnectivity.dart';
+import 'package:notification/pages/NoInternet.dart';
 import 'package:notification/providers/user.dart';
 import 'package:notification/widgets/post.dart';
 import 'package:provider/provider.dart';
@@ -14,11 +16,26 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   Future public;
+  bool internet=false;
 
   @override
   void initState() {
     super.initState();
     public = _getPublicSnapshots();
+    check().then((value) {
+      if (value != null && value) {
+        // Internet Present Case
+        setState(() {
+          internet=true;
+        });
+      }
+      else{
+        setState(() {
+          internet=false;
+        });
+      }
+      // No-Internet Case
+    });
   }
 
   _getPublicSnapshots() async {
@@ -32,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return internet?Container(
       child: FutureBuilder(
           future: public,
           builder: (context, snapshot) {
@@ -86,6 +103,6 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             );
           }),
-    );
+    ):Internet();
   }
 }
